@@ -1,0 +1,2301 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="Francisco Mendes">
+<meta name="theme-color" content="#1F5C54">
+<title>Gestão e Avaliação de Geografia — AE Monte da Lua</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Avaliação">
+<style>
+  :root {
+    --bg: #f8fafc; --panel: #ffffff; --text: #0f172a; --text-muted: #64748b;
+    --border: #cbd5e1; --border-light: #e2e8f0; --primary: #1F5C54; --primary-dark: #143F39;
+    --accent: #C68A2E; --danger: #dc2626; --danger-bg: #fee2e2; --success: #16a34a; --radius: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  body { background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+  aside { width: 260px; background: #0f172a; color: #f8fafc; padding: 20px 14px; display: flex; flex-direction: column; flex-shrink: 0; }
+  .brand { margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid #1e293b; display: flex; align-items: center; gap: 10px; }
+  .brand div.logo-tag { width: 44px; height: 44px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: 800; font-size: 18px; }
+  .brand h1 { font-size: 15px; font-weight: 700; color: #38bdf8; margin: 0; line-height: 1.2; }
+  .brand span { display: block; font-size: 11px; color: #94a3b8; margin-top: 3px; font-weight: normal; }
+  .ctx-card { background: #1e293b; border-radius: 6px; padding: 12px; margin-bottom: 16px; display: grid; gap: 10px; font-size: 12px; }
+  .ctx-card label { text-transform: uppercase; color: #94a3b8; font-size: 10px; font-weight: 700; }
+  .ctx-card select { width: 100%; padding: 6px 8px; border-radius: 4px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+  .sem-switch { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .sem-switch button { padding: 6px 2px; border-radius: 4px; border: 1px solid #334155; background: #0f172a; color: #cbd5e1; font-size: 11.5px; font-weight: 700; cursor: pointer; }
+  .sem-switch button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  nav { display: flex; flex-direction: column; gap: 3px; }
+  nav button { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 9px 12px; background: none; border: none; color: #cbd5e1; font-size: 13px; cursor: pointer; border-radius: 6px; }
+  nav button:hover { background: #1e293b; color: #fff; }
+  nav button.active { background: var(--primary); color: #fff; font-weight: 600; }
+  aside .footer { margin-top: auto; padding-top: 14px; border-top: 1px solid #1e293b; font-size: 11px; color: #64748b; text-align: center; }
+
+  main { flex: 1; padding: 24px 30px; overflow-y: auto; min-width: 0; }
+  .view-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; gap: 14px; flex-wrap: wrap; }
+  .view-header h2 { font-size: 20px; font-weight: 700; color: #0f172a; }
+  .view-header p { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+  .btn-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  button.btn { font-size: 12px; font-weight: 600; padding: 7px 12px; border-radius: 6px; border: 1px solid var(--border); background: #fff; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+  button.btn:hover { background: #f1f5f9; }
+  button.btn:disabled { opacity: .5; cursor: not-allowed; }
+  button.btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+  button.btn-primary:hover { background: var(--primary-dark); }
+  button.btn-accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.btn-accent:hover { background: #a87424; }
+  button.btn-danger { color: var(--danger); border-color: var(--danger-bg); }
+  button.btn-danger:hover { background: var(--danger-bg); }
+  button.btn-sm { padding: 3px 8px; font-size: 11px; }
+  .muted { color: var(--text-muted); font-size: 12px; }
+  .banner { padding: 10px 16px; border-radius: 6px; margin-bottom: 14px; display: none; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 600; gap: 10px; }
+  .banner.ativo { display: flex; }
+  .banner-arquivo { background: #FEF3C7; border: 1px solid #F59E0B; color: #92400E; }
+
+  .grid-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .metric-card { background: var(--panel); border: 1px solid var(--border-light); border-radius: var(--radius); padding: 12px 16px; border-left: 4px solid var(--primary); }
+  .metric-card .label { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--text-muted); }
+  .metric-card .val { font-size: 21px; font-weight: 800; color: #0f172a; margin-top: 4px; }
+  .scale-bar { background: #EAEFE8; border: 1px solid var(--border); border-radius: 6px; padding: 8px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; gap: 12px; flex-wrap: wrap; }
+  .scale-bar select { padding: 4px 8px; font-weight: 700; border-radius: 4px; border: 1px solid var(--primary); background: #fff; color: var(--primary-dark); font-size: 12px; }
+
+  .table-wrap { background: var(--panel); border: 1px solid var(--border-light); border-radius: var(--radius); overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+  th, td { padding: 6px 8px; border-bottom: 1px solid var(--border-light); border-right: 1px solid var(--border-light); white-space: nowrap; }
+  th { background: #f1f5f9; font-weight: 700; position: sticky; top: 0; z-index: 2; }
+  td.wrap, th.wrap { white-space: normal; }
+  .th-d1 { background: #eff6ff; color: #1e40af; } .th-d2 { background: #ecfdf5; color: #065f46; } .th-d3 { background: #fffbeb; color: #92400e; }
+  .th-mencoes { background: #fdf4ff; color: #86198f; } .th-fin { background: #f5f3ff; color: #4338ca; }
+  .sem-tag { display: block; font-size: 9px; font-weight: 700; opacity: .7; }
+  tr.saiu td { opacity: .45; }
+  input.score-input { width: 46px; padding: 4px; border: 1px solid var(--border); border-radius: 4px; text-align: center; font-weight: 600; font-size: 11.5px; }
+  input.score-input:focus { outline: 2px solid var(--primary); border-color: transparent; background: #EFF6F1; }
+  input.score-input.invalido { background: #fee2e2; border-color: var(--danger); }
+  .badge { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .badge-pos { background: #dcfce7; color: #15803d; } .badge-neg { background: #fee2e2; color: #b91c1c; }
+  .badge-med { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 9.5px; font-weight: 700; background: #e0e7ff; color: #3730a3; margin-left: 4px; cursor: pointer; }
+  .badge-med.S { background: #fef3c7; color: #92400e; } .badge-med.A { background: #fce7f3; color: #9d174d; }
+  .badge-add { cursor: pointer; opacity: .3; font-size: 10px; margin-left: 4px; }
+  .badge-mencao { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 700; }
+  .mencao-mb { background: #dcfce7; color: #15803d; } .mencao-bom { background: #ecfdf5; color: #047857; }
+  .mencao-suf { background: #fef9c3; color: #854d0e; } .mencao-ins { background: #fee2e2; color: #b91c1c; }
+
+  .panel { background: var(--panel); border: 1px solid var(--border-light); border-radius: var(--radius); padding: 18px; margin-bottom: 18px; }
+  .panel h3 { font-size: 15px; margin-bottom: 12px; color: #0f172a; border-bottom: 1px solid var(--border-light); padding-bottom: 6px; }
+  .panel h4 { font-size: 13px; margin: 12px 0 6px; color: var(--primary-dark); }
+  .form-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+  .form-row input, .form-row select, textarea, .inp { font-family: inherit; font-size: 13px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 5px; }
+  textarea { width: 100%; }
+  label.field { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: #334155; }
+  .chk-list { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; }
+  .chk-list label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+  .hint { background: #F0F7F4; border-left: 3px solid var(--primary); padding: 8px 12px; font-size: 12px; color: #334155; border-radius: 4px; margin-bottom: 12px; line-height: 1.5; }
+  .warn { background: #FEF3C7; border-left: 3px solid #F59E0B; padding: 8px 12px; font-size: 12px; color: #78350f; border-radius: 4px; margin-bottom: 12px; line-height: 1.5; }
+  .ok { color: var(--success); font-weight: 700; } .err { color: var(--danger); font-weight: 700; }
+
+  .reporte-card { background: #fff; border: 1px solid var(--border-light); border-radius: 8px; padding: 14px 18px; margin-bottom: 14px; }
+  .reporte-card h4 { font-size: 14px; margin-bottom: 8px; display: flex; justify-content: space-between; gap: 10px; }
+  .reporte-item { display: grid; grid-template-columns: 260px 1fr; gap: 12px; margin-bottom: 6px; font-size: 12px; }
+  .reporte-item .d-title { font-weight: 700; color: #334155; }
+  .reporte-item .d-text { background: #f8fafc; padding: 6px 10px; border-radius: 4px; border-left: 3px solid var(--primary); color: #475569; }
+  .criterio-config-card { background: #F8FAF7; border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 12px; display: grid; grid-template-columns: 120px 1fr 140px; gap: 14px; align-items: center; }
+  .soma-badge { display: inline-flex; padding: 6px 14px; border-radius: 99px; font-weight: 700; font-size: 13px; }
+  .soma-ok { background: #dcfce7; color: #15803d; } .soma-erro { background: #fee2e2; color: #b91c1c; }
+
+  .ficha-aluno-print { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 24px; max-width: 800px; margin: 0 auto 20px; }
+  .ficha-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 12px; margin-bottom: 16px; }
+  .ficha-secao { margin-bottom: 16px; }
+  .ficha-secao h4 { font-size: 13px; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid var(--border-light); padding-bottom: 4px; }
+  .caixa-assinatura { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; text-align: center; }
+  .linha-assinatura { border-top: 1px solid #334155; padding-top: 4px; font-size: 11px; color: #475569; }
+
+  .modal { position: fixed; inset: 0; background: rgba(15,23,42,0.6); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+  .modal.aberto { display: flex; }
+  .modal-box { background: #fff; border-radius: 8px; width: 100%; max-width: 720px; max-height: 92vh; overflow-y: auto; padding: 22px; box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+  .modal-box.largo { max-width: 960px; }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding-bottom: 10px; margin-bottom: 14px; }
+  .modal-header h3 { margin: 0; color: var(--primary-dark); font-size: 16px; }
+  .modal-header button { border: none; background: none; font-size: 18px; cursor: pointer; }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+  .med-grupo { border: 1px solid var(--border-light); border-radius: 6px; padding: 10px 12px; margin-bottom: 10px; }
+  .med-grupo h5 { font-size: 12.5px; color: var(--primary-dark); margin-bottom: 6px; }
+  .med-grupo .chk-list { flex-direction: column; gap: 4px; }
+  .sub-list { margin: 2px 0 4px 24px; display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: #475569; }
+  .toast { position: fixed; bottom: 20px; right: 20px; background: #0f172a; color: #fff; padding: 9px 16px; border-radius: 6px; font-size: 12px; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 2000; }
+  .toast.show { opacity: 1; }
+  .vazio { padding: 24px; text-align: center; color: var(--text-muted); font-size: 13px; }
+  .banner-backup { background: #FEE2E2; border: 1px solid #FCA5A5; color: #991B1B; }
+
+  /* Registo em aula (pensado para iPad) */
+  .rr-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .rr-tabs button { padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border); background: #fff; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .rr-tabs button.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .rr-lista { display: grid; gap: 6px; }
+  .rr-linha { display: grid; grid-template-columns: 44px 1fr auto auto; gap: 10px; align-items: center; background: #fff; border: 1px solid var(--border-light); border-radius: 8px; padding: 8px 12px; }
+  .rr-linha .num { font-weight: 800; color: var(--primary-dark); text-align: center; }
+  .rr-linha .nome { font-weight: 600; font-size: 14px; }
+  .rr-linha .resumo { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+  .rr-btns { display: flex; gap: 6px; }
+  .rr-btn { min-width: 46px; height: 42px; border-radius: 8px; border: 1px solid var(--border); background: #f8fafc; font-size: 16px; font-weight: 800; cursor: pointer; }
+  .rr-btn.on.n1 { background: #b91c1c; color: #fff; border-color: #b91c1c; }
+  .rr-btn.on.n2 { background: #f97316; color: #fff; border-color: #f97316; }
+  .rr-btn.on.n3 { background: #eab308; color: #fff; border-color: #eab308; }
+  .rr-btn.on.n4 { background: #22c55e; color: #fff; border-color: #22c55e; }
+  .rr-btn.on.n5 { background: #15803d; color: #fff; border-color: #15803d; }
+  .rr-btn.toggle { min-width: 150px; font-size: 13px; }
+  .rr-btn.toggle.on { background: #b91c1c; color: #fff; border-color: #b91c1c; }
+
+  /* Alertas e propostas */
+  .alerta { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; margin: 2px 4px 2px 0; }
+  .al-neg { background: #fee2e2; color: #b91c1c; } .al-desc { background: #ffedd5; color: #9a3412; }
+  .al-falta { background: #e0e7ff; color: #3730a3; } .al-med { background: #fce7f3; color: #9d174d; } .al-reg { background: #fef9c3; color: #854d0e; }
+
+  /* Bloqueio por PIN */
+  #ecra-bloqueio { position: fixed; inset: 0; background: #0f172a; z-index: 5000; display: none; align-items: center; justify-content: center; }
+  #ecra-bloqueio.ativo { display: flex; }
+  #ecra-bloqueio .caixa { background: #fff; border-radius: 12px; padding: 28px; width: 320px; text-align: center; }
+  #ecra-bloqueio input { width: 100%; font-size: 24px; letter-spacing: 8px; text-align: center; padding: 10px; border: 1px solid var(--border); border-radius: 8px; margin: 14px 0; }
+
+  @media print {
+    body { background: #fff !important; display: block; font-size: 10pt; }
+    aside, .btn-bar, .scale-bar, .grid-metrics, .toast, .banner, .no-print, .modal { display: none !important; }
+    main { padding: 0 !important; }
+    .table-wrap { overflow: visible !important; border: none !important; }
+    table { font-size: 8.5pt !important; }
+    th, td { border: 1px solid #94a3b8 !important; padding: 3px 5px !important; white-space: normal; }
+    .panel { border: none; padding: 0; }
+    .ficha-aluno-print { border: none !important; padding: 0 !important; page-break-after: always; }
+    .reporte-card { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<aside>
+  <div class="brand">
+    <div class="logo-tag">ML</div>
+    <div><h1>GEOGRAFIA</h1><span>AE Monte da Lua</span></div>
+  </div>
+  <div class="ctx-card">
+    <div><label>Ano Letivo</label><select id="ctx-ano-letivo" onchange="selecionarAnoLetivo(this.value)"></select></div>
+    <div><label>Turma Ativa</label><select id="ctx-turma" onchange="selecionarTurmaPorId(this.value)"></select></div>
+    <div>
+      <label>Semestre</label>
+      <div class="sem-switch">
+        <button id="sem-S1" onclick="mudarVista('S1')">1.º S</button>
+        <button id="sem-S2" onclick="mudarVista('S2')">2.º S</button>
+        <button id="sem-ANO" onclick="mudarVista('ANO')" title="Classificação final do ano">Final</button>
+      </div>
+    </div>
+  </div>
+  <nav>
+    <button class="active" id="btn-v-grelha" onclick="navegar('grelha')">Grelha de Avaliação</button>
+    <button id="btn-v-registo" onclick="navegar('registo')">Registo em Aula</button>
+    <button id="btn-v-estatisticas" onclick="navegar('estatisticas')">Síntese Conselho de Turma</button>
+    <button id="btn-v-ficha" onclick="navegar('ficha')">Ficha Individual / EE</button>
+    <button id="btn-v-reporte" onclick="navegar('reporte')">Reporte Intercalar</button>
+    <button id="btn-v-medidas" onclick="navegar('medidas')">Medidas DL 54/2018</button>
+    <button id="btn-v-instrumentos" onclick="navegar('instrumentos')">Elementos de Avaliação</button>
+    <button id="btn-v-turmas" onclick="navegar('turmas')">Turmas &amp; Alunos</button>
+    <button id="btn-v-criterios" onclick="navegar('criterios')">Critérios &amp; Ponderações</button>
+    <button id="btn-v-anos" onclick="navegar('anos')">Anos Letivos &amp; Arquivo</button>
+    <button id="btn-v-backup" onclick="navegar('backup')">Cópia de Segurança</button>
+  </nav>
+  <div id="caixa-drive" style="display:none; margin-top:14px; background:#1e293b; border-radius:6px; padding:10px; text-align:center;">
+    <button class="btn btn-sm btn-accent" style="width:100%; justify-content:center;" onclick="sincronizarDrive(false)">🔄 Atualizar da Drive</button>
+    <div id="txt-estado-drive" style="font-size:10.5px; color:#94a3b8; margin-top:6px;"></div>
+  </div>
+  <div class="footer">
+    <button id="btn-bloquear" class="btn btn-sm" style="display:none; margin:0 auto 8px;" onclick="bloquearApp()">🔒 Bloquear</button>
+    Geografia A / 3.º Ciclo<br><span id="txt-ultimo-backup"></span>
+  </div>
+</aside>
+
+<main>
+  <div id="banner-arquivo" class="banner banner-arquivo">
+    <span>🔒 <strong>ANO LETIVO ARQUIVADO (SÓ LEITURA):</strong> classificações e turmas bloqueadas contra edições acidentais.</span>
+    <button class="btn btn-sm" onclick="alternarArquivoAno(AppState.anoAtivo, false)">Desbloquear ano</button>
+  </div>
+  <div id="banner-backup" class="banner banner-backup">
+    <span id="txt-banner-backup">⚠️ Ainda não fizeste nenhuma cópia de segurança.</span>
+    <button class="btn btn-sm" onclick="exportarBackupJSON()">Descarregar backup agora</button>
+  </div>
+
+  <!-- REGISTO EM AULA -->
+  <section id="view-registo" style="display:none;">
+    <div class="view-header">
+      <div><h2 id="registo-titulo">Registo em Aula</h2><p>Toca para registar; toca outra vez no mesmo botão para anular. Grava automaticamente.</p></div>
+      <div class="btn-bar">
+        <input type="date" id="rr-data" class="inp" onchange="renderizarRegisto()">
+        <select id="rr-sem" class="inp" onchange="renderizarRegisto()"><option value="1">1.º semestre</option><option value="2">2.º semestre</option></select>
+      </div>
+    </div>
+    <div class="rr-tabs">
+      <button id="rr-tab-comp" onclick="mudarTipoRegisto('comp')">Compromisso (1–5)</button>
+      <button id="rr-tab-mat" onclick="mudarTipoRegisto('mat')">Falta de material</button>
+      <button id="rr-tab-tpc" onclick="mudarTipoRegisto('tpc')">Trabalho de casa não feito</button>
+    </div>
+    <div class="hint" id="rr-ajuda"></div>
+    <div class="rr-lista" id="rr-lista"></div>
+    <div class="panel" style="margin-top:18px;"><h3>Aulas registadas nesta turma</h3><div id="rr-historico"></div></div>
+  </section>
+
+  <!-- 1. GRELHA -->
+  <section id="view-grelha">
+    <div class="view-header">
+      <div><h2 id="grelha-titulo">Grelha de Avaliação</h2><p id="grelha-desc"></p></div>
+      <div class="btn-bar">
+        <button class="btn btn-primary" onclick="abrirModalColar()">📋 Colar notas (1 elemento)</button>
+        <button class="btn btn-primary" onclick="abrirModalForms()">📥 Colar tabela de Forms</button>
+        <button class="btn btn-accent" onclick="abrirModalInovar()">Níveis para o Inovar</button>
+        <button class="btn" onclick="exportarExcel()">Exportar Excel</button>
+        <button class="btn" onclick="exportarCSV()">Exportar CSV</button>
+      </div>
+    </div>
+    <div class="grid-metrics">
+      <div class="metric-card" style="border-left-color:#3b82f6;"><div class="label" id="lbl-m1">Domínio 1</div><div class="val" id="val-m1">-</div></div>
+      <div class="metric-card" style="border-left-color:#10b981;"><div class="label" id="lbl-m2">Domínio 2</div><div class="val" id="val-m2">-</div></div>
+      <div class="metric-card" style="border-left-color:#f59e0b;"><div class="label" id="lbl-m3">Domínio 3</div><div class="val" id="val-m3">-</div></div>
+      <div class="metric-card" style="border-left-color:#6366f1;"><div class="label" id="lbl-mt">Média da turma</div><div class="val" id="val-mt">-</div></div>
+    </div>
+    <div class="scale-bar">
+      <div><strong>Escala de lançamento:</strong> <span class="muted" id="scale-info-txt"></span></div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span class="muted" style="font-size:11px;">⌨️ Setas ou Enter para mudar de célula · «D» = dispensado · célula vazia = não realizou</span>
+        <select id="sel-escala" onchange="mudarEscala(this.value)">
+          <option value="100">0 a 100%</option>
+          <option value="20">0 a 20 valores</option>
+          <option value="10">0 a 10</option>
+          <option value="200">0 a 200 pontos</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-wrap"><table id="tbl-avaliar"><thead id="tbl-head"></thead><tbody id="tbl-body"></tbody></table></div>
+  </section>
+
+  <!-- 2. SÍNTESE CT -->
+  <section id="view-estatisticas" style="display:none;">
+    <div class="view-header">
+      <div><h2>Síntese para Conselho de Turma</h2><p id="ct-desc"></p></div>
+      <div class="btn-bar"><button class="btn btn-primary" onclick="window.print()">Imprimir síntese (A4)</button></div>
+    </div>
+    <div class="grid-metrics">
+      <div class="metric-card" style="border-left-color:#16a34a;"><div class="label">Taxa de sucesso</div><div class="val" id="ct-taxa-sucesso">-</div></div>
+      <div class="metric-card" style="border-left-color:#dc2626;"><div class="label">Taxa de insucesso</div><div class="val" id="ct-taxa-insucesso">-</div></div>
+      <div class="metric-card" style="border-left-color:#3b82f6;"><div class="label">Média da turma</div><div class="val" id="ct-media-turma">-</div></div>
+      <div class="metric-card" style="border-left-color:#8b5cf6;"><div class="label">Máximo / mínimo</div><div class="val" id="ct-max-min">-</div></div>
+    </div>
+    <div class="panel"><h3>Alertas</h3><div id="ct-alertas"></div></div>
+    <div class="panel"><h3>Alunos com classificação negativa</h3><div id="ct-alunos-risco"></div></div>
+    <div class="panel"><h3>Distribuição das classificações</h3><div id="ct-distribuicao-notas"></div></div>
+    <div class="panel">
+      <h3 style="display:flex; justify-content:space-between; align-items:center;">Proposta de nível com justificação (base para a ata)
+        <button class="btn btn-sm no-print" onclick="copiarPropostas()">📋 Copiar todas</button></h3>
+      <div class="hint no-print">Texto gerado a partir dos resultados. É uma base de trabalho: revê-o e ajusta-o antes de o usares na ata.</div>
+      <div id="ct-propostas"></div>
+    </div>
+  </section>
+
+  <!-- 3. FICHA EE -->
+  <section id="view-ficha" style="display:none;">
+    <div class="view-header">
+      <div><h2>Ficha Individual / Encarregado de Educação (A4)</h2><p>Resumo para impressão, com os descritores e espaço para assinatura.</p></div>
+      <div class="btn-bar">
+        <select id="sel-aluno-ficha" class="inp" onchange="renderizarFicha()" style="min-width:260px; font-weight:600;"></select>
+        <button class="btn btn-primary" onclick="window.print()">Imprimir ficha (A4)</button>
+      </div>
+    </div>
+    <div id="conteudo-ficha"></div>
+  </section>
+
+  <!-- 4. REPORTE -->
+  <section id="view-reporte" style="display:none;">
+    <div class="view-header">
+      <div><h2>Reporte Avaliativo Intercalar</h2><p id="reporte-desc">Descritores de desempenho por domínio.</p></div>
+      <div class="btn-bar"><button class="btn btn-primary" onclick="window.print()">Imprimir / Guardar PDF</button></div>
+    </div>
+    <div id="lista-reportes"></div>
+  </section>
+
+  <!-- 5. MEDIDAS -->
+  <section id="view-medidas" style="display:none;">
+    <div class="view-header">
+      <div><h2>Medidas de Suporte à Aprendizagem e à Inclusão</h2><p>Decreto-Lei n.º 54/2018 — quadro da turma ativa.</p></div>
+      <div class="btn-bar"><button class="btn btn-primary" onclick="window.print()">Imprimir quadro (A4)</button></div>
+    </div>
+    <div class="panel"><h3 id="medidas-titulo">Medidas da turma</h3><div id="quadro-medidas"></div></div>
+    <div class="panel no-print">
+      <h3>Lista de submedidas universais (editável)</h3>
+      <div class="hint">Listas copiadas do Inovar (janela «Medidas (DL 54)»). <strong>Uma por linha</strong>; para indicar a categoria escreve <em>Categoria | Submedida</em>. Ficam disponíveis para picar em cada aluno («Editar») e são iguais para todas as turmas. Se o Inovar mudar, corrige aqui e carrega em «Guardar».</div>
+      <div id="editor-catalogo"></div>
+      <div class="btn-bar" style="margin-top:10px;"><button class="btn btn-primary" onclick="guardarCatalogo()">Guardar listas de submedidas</button></div>
+    </div>
+  </section>
+
+  <!-- 6. ELEMENTOS -->
+  <section id="view-instrumentos" style="display:none;">
+    <div class="view-header"><div><h2>Elementos de Avaliação</h2><p>Testes, Forms, trabalhos e registos — por semestre e por turma.</p></div></div>
+    <div class="panel">
+      <h3>Criar elemento (numa ou em várias turmas)</h3>
+      <div class="form-row">
+        <input type="text" id="novo-inst-id" placeholder="Código (ex.: T1, F3)" style="width:140px;">
+        <input type="text" id="novo-inst-label" placeholder="Designação (ex.: Teste 1)" style="flex:1; min-width:200px;">
+        <select id="novo-inst-dom"></select>
+        <select id="novo-inst-sem"><option value="1">1.º semestre</option><option value="2">2.º semestre</option></select>
+      </div>
+      <div style="font-size:12px; font-weight:700; margin-bottom:6px;">Criar nas turmas:
+        <span id="atalhos-turmas"></span>
+      </div>
+      <div class="chk-list" id="chk-turmas-inst" style="margin-bottom:12px;"></div>
+      <button class="btn btn-primary" onclick="adicionarInstrumento()">Criar elemento</button>
+    </div>
+    <div class="panel"><h3 id="inst-titulo">Elementos da turma</h3><div id="lista-instrumentos"></div></div>
+  </section>
+
+  <!-- 7. TURMAS -->
+  <section id="view-turmas" style="display:none;">
+    <div class="view-header"><div><h2>Turmas e Alunos</h2><p>Criar turmas, importar listas do Inovar e gerir alunos.</p></div></div>
+    <div class="panel">
+      <h3>Criar nova turma</h3>
+      <div class="form-row">
+        <input type="text" id="novo-turma-nome" placeholder="Ex.: 7.º C" style="min-width:160px;">
+        <select id="novo-turma-ciclo"><option value="basico">3.º Ciclo (Geografia)</option><option value="secundario">Secundário (Geografia A)</option></select>
+        <button class="btn btn-primary" onclick="criarTurma()">Criar turma</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Alunos da turma <span id="txt-turma-ativa"></span></h3>
+      <h4>Importar ou atualizar a lista (Inovar, Excel, folha mestra)</h4>
+      <div class="hint">Copia as colunas <strong>N.º</strong> e <strong>Nome</strong> e cola aqui (uma linha por aluno). A app compara com a lista atual: acrescenta os novos, corrige nomes e números, <strong>nunca duplica</strong>, e mostra quem já não consta da lista (transferências), para decidires.</div>
+      <textarea id="lote-alunos" rows="6" placeholder="1&#9;Afonso Rocha&#10;2&#9;Alice Silva&#10;3&#9;Bernardo Santos"></textarea>
+      <div class="btn-bar" style="margin-top:8px;"><button class="btn btn-primary" onclick="analisarListaAlunos()">Analisar lista</button></div>
+      <div id="preview-alunos" style="margin-top:12px;"></div>
+
+      <h4 style="margin-top:18px;">Acrescentar um aluno</h4>
+      <div class="form-row">
+        <input type="number" id="novo-aluno-num" placeholder="N.º" style="width:70px;">
+        <input type="text" id="novo-aluno-nome" placeholder="Nome do aluno" style="flex:1; min-width:200px;">
+        <button class="btn" onclick="adicionarAlunoIndividual()">Acrescentar</button>
+      </div>
+
+      <div style="margin-top:14px;">
+        <table style="max-width:900px;">
+          <thead><tr><th style="width:70px;">N.º</th><th>Nome</th><th>Medidas</th><th>Situação</th><th style="width:60px;">Apagar</th></tr></thead>
+          <tbody id="lista-alunos-turma"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:20px; padding-top:14px; border-top:1px solid var(--border-light);" class="btn-bar">
+        <input type="text" id="renomear-turma" class="inp" placeholder="Novo nome da turma" style="width:180px;">
+        <button class="btn" onclick="renomearTurma()">Renomear turma</button>
+        <button class="btn btn-danger" onclick="eliminarTurmaAtual()">Eliminar esta turma</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. CRITÉRIOS -->
+  <section id="view-criterios" style="display:none;">
+    <div class="view-header"><div><h2>Critérios &amp; Ponderações</h2><p>Pesos dos domínios (por turma) e conversão da percentagem em nível (para todas as turmas do 3.º ciclo).</p></div></div>
+    <div class="panel">
+      <h3>Ponderações da turma <span id="txt-turma-criterios"></span></h3>
+      <div class="criterio-config-card" style="border-left:4px solid #3b82f6;"><div><strong>Domínio 1</strong></div><label class="field">Designação<input type="text" id="cfg-d1-nome" class="inp"></label><label class="field">Ponderação (%)<input type="number" id="cfg-d1-peso" class="inp" min="0" max="100" oninput="atualizarSoma()"></label></div>
+      <div class="criterio-config-card" style="border-left:4px solid #10b981;"><div><strong>Domínio 2</strong></div><label class="field">Designação<input type="text" id="cfg-d2-nome" class="inp"></label><label class="field">Ponderação (%)<input type="number" id="cfg-d2-peso" class="inp" min="0" max="100" oninput="atualizarSoma()"></label></div>
+      <div class="criterio-config-card" style="border-left:4px solid #f59e0b;"><div><strong>Domínio 3</strong></div><label class="field">Designação<input type="text" id="cfg-d3-nome" class="inp"></label><label class="field">Ponderação (%)<input type="number" id="cfg-d3-peso" class="inp" min="0" max="100" oninput="atualizarSoma()"></label></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:14px;">
+        <span id="badge-soma" class="soma-badge soma-ok">Soma: 100%</span>
+        <div class="btn-bar">
+          <button class="btn" onclick="reporPonderacoesPadrao()">Repor padrão do ciclo</button>
+          <button class="btn" onclick="aplicarPonderacoesTodas()">Aplicar a todas as turmas deste ciclo (ano ativo)</button>
+          <button class="btn btn-primary" onclick="guardarPonderacoes()">Guardar ponderações</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Conversão percentagem → nível (3.º ciclo)</h3>
+      <div class="hint">Limite inferior de cada nível. Confirma estes valores nos critérios de avaliação aprovados pelo agrupamento.</div>
+      <div class="form-row">
+        <label class="field">Nível 2 a partir de (%)<input type="number" id="corte-2" class="inp" style="width:110px;"></label>
+        <label class="field">Nível 3 a partir de (%)<input type="number" id="corte-3" class="inp" style="width:110px;"></label>
+        <label class="field">Nível 4 a partir de (%)<input type="number" id="corte-4" class="inp" style="width:110px;"></label>
+        <label class="field">Nível 5 a partir de (%)<input type="number" id="corte-5" class="inp" style="width:110px;"></label>
+        <button class="btn btn-primary" style="align-self:flex-end;" onclick="guardarCortes()">Guardar conversão</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Regras de cálculo</h3>
+      <label style="display:flex; gap:8px; align-items:center; font-size:13px; margin-bottom:12px;"><input type="checkbox" id="cfg-vazio-zero" onchange="guardarRegrasCalculo()">
+        Um domínio ainda sem notas conta como <strong>0</strong> (como na folha de cálculo). Se desligado, o peso desse domínio é distribuído pelos outros e o resultado fica marcado como parcial (*).</label>
+      <div style="font-size:13px; font-weight:700; margin-bottom:6px;">Classificação final do ano (botão «Final» no menu lateral):</div>
+      <div class="form-row">
+        <label class="field">Domínio 1<select id="cfg-regra-d1" class="inp" onchange="guardarRegrasCalculo()"></select></label>
+        <label class="field">Domínio 2<select id="cfg-regra-d2" class="inp" onchange="guardarRegrasCalculo()"></select></label>
+        <label class="field">Domínio 3<select id="cfg-regra-d3" class="inp" onchange="guardarRegrasCalculo()"></select></label>
+      </div>
+      <p class="muted">Na folha de cálculo: Conhecimento = média de todos os elementos do ano; Técnicas = média das médias dos dois semestres; Compromisso = só o 2.º semestre.</p>
+    </div>
+    <div class="panel">
+      <h3>Registo em aula</h3>
+      <label style="display:flex; gap:8px; align-items:center; font-size:13px;"><input type="checkbox" id="cfg-registo-conta" onchange="guardarRegistoConta()">
+        Os registos de Compromisso (1–5) feitos em «Registo em Aula» contam como um elemento («RA») do domínio 3, com o mesmo peso dos outros elementos desse domínio.</label>
+      <p class="muted" style="margin-top:6px;">Conversão: cada nível vale o ponto médio do seu intervalo na tabela de conversão acima (com os valores de origem: 1→10%, 2→35%, 3→60%, 4→80%, 5→95%). As faltas de material e de trabalho de casa são só contadas e mostradas; não descontam nada automaticamente.</p>
+    </div>
+    <div class="panel">
+      <h3>Identificação nos documentos</h3>
+      <div class="form-row">
+        <label class="field" style="flex:1;">Agrupamento / escola (cabeçalho da ficha)<input type="text" id="cfg-escola" class="inp"></label>
+        <button class="btn btn-primary" style="align-self:flex-end;" onclick="guardarEscola()">Guardar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. ANOS -->
+  <section id="view-anos" style="display:none;">
+    <div class="view-header"><div><h2>Anos Letivos &amp; Arquivo</h2><p>Criar um ano novo não mexe nas turmas dos anos anteriores.</p></div></div>
+    <div class="panel">
+      <h3>Criar novo ano letivo</h3>
+      <div class="form-row">
+        <input type="text" id="novo-ano-nome" placeholder="Ex.: 2027/2028" style="width:160px;">
+        <select id="novo-ano-copiar">
+          <option value="nada">Começar sem turmas</option>
+          <option value="turmas">Copiar as turmas do ano ativo (sem alunos)</option>
+          <option value="alunos">Copiar turmas e alunos (sem notas, sem elementos)</option>
+        </select>
+        <button class="btn btn-primary" onclick="criarAnoLetivo()">Criar ano</button>
+      </div>
+    </div>
+    <div class="panel"><h3>Anos letivos</h3><ul id="lista-anos" style="list-style:none; display:grid; gap:8px;"></ul></div>
+  </section>
+
+  <!-- 10. BACKUP -->
+  <section id="view-backup" style="display:none;">
+    <div class="view-header"><div><h2>Cópia de Segurança</h2><p>Os dados ficam só neste navegador. Faz cópia regularmente.</p></div></div>
+    <div class="panel">
+      <h3>Descarregar e restaurar</h3>
+      <div class="warn">O ficheiro de backup contém nomes, notas e medidas dos alunos (dados pessoais). Guarda-o num local seguro e não o envies a terceiros.</div>
+      <div class="btn-bar">
+        <button class="btn btn-primary" onclick="exportarBackupJSON()">Descarregar backup (.json)</button>
+        <input type="file" id="inp-import-backup" accept=".json" onchange="importarBackupJSON(event)" style="display:none;">
+        <button class="btn" onclick="$('inp-import-backup').click()">Restaurar a partir de backup (.json)</button>
+      </div>
+      <p id="backup-msg" style="margin-top:12px; font-weight:600; font-size:12.5px;"></p>
+    </div>
+    <div class="panel">
+      <h3>Ligação às folhas da Drive</h3>
+      <div class="hint">Com a ligação configurada, a app vai buscar às folhas de avaliação da Drive os alunos, os testes, os Forms, os trabalhos de Técnicas e o Compromisso, sempre que é aberta com internet ou quando carregas em «Atualizar da Drive». Os elementos que vêm da Drive ficam marcados com ☁ e só se alteram na folha. O que existe só na app (medidas, registos em aula, elementos criados aqui) nunca é apagado.</div>
+      <div class="form-row">
+        <label class="field" style="flex:2; min-width:260px;">Endereço (URL da app web, termina em /exec)<input type="text" id="drive-url" class="inp" placeholder="https://script.google.com/macros/s/…/exec"></label>
+        <label class="field" style="flex:1; min-width:200px;">Chave<input type="password" id="drive-chave" class="inp" autocomplete="off"></label>
+      </div>
+      <div class="form-row">
+        <label style="display:flex; gap:6px; align-items:center; font-size:13px;"><input type="checkbox" id="drive-auto"> Atualizar automaticamente ao abrir a app</label>
+      </div>
+      <div class="btn-bar">
+        <button class="btn btn-primary" onclick="guardarLigacaoDrive()">Guardar ligação</button>
+        <button class="btn btn-accent" onclick="sincronizarDrive(false)">🔄 Atualizar agora</button>
+      </div>
+      <div id="drive-relatorio" style="margin-top:12px; font-size:12.5px;"></div>
+    </div>
+    <div class="panel">
+      <h3>Proteção com PIN</h3>
+      <div class="hint">O PIN impede que alguém que se sente ao computador veja as notas ao abrir a app. <strong>Não cifra os dados</strong>: quem souber mexer nas ferramentas do navegador consegue lê-los. Ao criar o PIN recebes um código de recuperação — escreve-o num papel.</div>
+      <div id="pin-estado" style="font-size:13px; margin-bottom:10px;"></div>
+      <div class="form-row">
+        <input type="password" id="pin-novo" inputmode="numeric" placeholder="Novo PIN (4 a 8 algarismos)" style="width:220px;">
+        <input type="password" id="pin-novo2" inputmode="numeric" placeholder="Repetir PIN" style="width:160px;">
+        <button class="btn btn-primary" onclick="definirPIN()">Guardar PIN</button>
+        <button class="btn btn-danger" id="btn-remover-pin" onclick="removerPIN()">Remover PIN</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Limpar</h3>
+      <div class="btn-bar"><button class="btn btn-danger" onclick="limparTudo()">Apagar todos os dados e voltar ao início</button></div>
+    </div>
+  </section>
+</main>
+
+<!-- MODAL: COLAR 1 ELEMENTO -->
+<div id="modal-colar" class="modal"><div class="modal-box">
+  <div class="modal-header"><h3>📋 Colar notas de um elemento</h3><button onclick="fecharModal('modal-colar')">✕</button></div>
+  <div class="form-row">
+    <label class="field" style="flex:1;">Destino
+      <select id="colar-destino" onchange="alternarDestinoColar()"><option value="existente">Elemento existente</option><option value="novo">Criar novo elemento</option></select>
+    </label>
+    <label class="field" style="flex:1;" id="campo-colar-existente">Elemento<select id="colar-elemento"></select></label>
+  </div>
+  <div id="bloco-colar-novo" class="form-row" style="display:none;">
+    <label class="field" style="width:100px;">Código<input type="text" id="colar-novo-cod" class="inp" placeholder="T3"></label>
+    <label class="field" style="flex:1;">Designação<input type="text" id="colar-novo-label" class="inp" placeholder="Teste 3"></label>
+    <label class="field">Domínio<select id="colar-novo-dom" class="inp"></select></label>
+    <label class="field">Semestre<select id="colar-novo-sem" class="inp"><option value="1">1.º</option><option value="2">2.º</option></select></label>
+  </div>
+  <div class="form-row"><label class="field" style="flex:1;">Escala das notas copiadas
+    <select id="colar-escala"><option value="100">0 a 100%</option><option value="20">0 a 20</option><option value="10">0 a 10</option><option value="200">0 a 200</option></select></label></div>
+  <label class="field">Cola aqui (Ctrl+V). Recomendado: <strong>N.º e Nota</strong>.
+    <textarea id="colar-texto" rows="7" placeholder="1&#9;85&#10;2&#9;72,5&#10;3&#9;D"></textarea></label>
+  <div id="colar-feedback" style="font-size:12px; margin-top:8px;"></div>
+  <div class="modal-footer"><button class="btn" onclick="fecharModal('modal-colar')">Cancelar</button><button class="btn btn-primary" onclick="aplicarColar()">Aplicar notas</button></div>
+</div></div>
+
+<!-- MODAL: FORMS -->
+<div id="modal-forms" class="modal"><div class="modal-box largo">
+  <div class="modal-header"><h3>📥 Colar tabela de Forms (várias colunas de uma vez)</h3><button onclick="fecharModal('modal-forms')">✕</button></div>
+  <div class="hint">Na folha mestra da turma, seleciona a tabela <strong>com a linha de cabeçalhos</strong> (N.º, Nome, Forms 1, Forms 2…) e cola aqui. Cada coluna de notas torna-se um elemento (cria-o se não existir, atualiza-o se já existir). Células vazias não apagam notas já lançadas.</div>
+  <textarea id="forms-texto" rows="7" placeholder="N.º&#9;Nome&#9;Forms 1&#9;Forms 2&#10;1&#9;Afonso Rocha&#9;80&#9;65&#10;2&#9;Alice Silva&#9;95&#9;90"></textarea>
+  <div class="form-row" style="margin-top:10px;">
+    <label class="field">Domínio dos novos elementos<select id="forms-dom" class="inp"></select></label>
+    <label class="field">Semestre<select id="forms-sem" class="inp"><option value="1">1.º</option><option value="2">2.º</option></select></label>
+    <label class="field">Escala<select id="forms-escala" class="inp"><option value="100">0 a 100%</option><option value="20">0 a 20</option><option value="10">0 a 10</option><option value="200">0 a 200</option></select></label>
+    <label class="field">Prefixo do código<input type="text" id="forms-prefixo" class="inp" value="F" style="width:70px;"></label>
+    <button class="btn" style="align-self:flex-end;" onclick="analisarForms()">Analisar</button>
+  </div>
+  <div id="forms-preview"></div>
+  <div class="modal-footer"><button class="btn" onclick="fecharModal('modal-forms')">Cancelar</button><button class="btn btn-primary" id="btn-forms-aplicar" onclick="aplicarForms()" disabled>Aplicar à grelha</button></div>
+</div></div>
+
+<!-- MODAL: INOVAR -->
+<div id="modal-inovar" class="modal"><div class="modal-box">
+  <div class="modal-header"><h3>Níveis para colar no Inovar</h3><button onclick="fecharModal('modal-inovar')">✕</button></div>
+  <div class="hint" id="inovar-info"></div>
+  <div style="display:grid; grid-template-columns: 160px 1fr; gap:14px;">
+    <label class="field">Só os níveis<textarea id="inovar-texto" rows="16" readonly style="font-weight:700; text-align:center;"></textarea></label>
+    <div style="max-height:340px; overflow-y:auto;"><table id="inovar-tabela"></table></div>
+  </div>
+  <div class="modal-footer"><button class="btn" onclick="fecharModal('modal-inovar')">Fechar</button><button class="btn btn-primary" onclick="copiarInovar()">📋 Copiar níveis</button></div>
+</div></div>
+
+<!-- MODAL: MEDIDAS DE UM ALUNO -->
+<div id="modal-medidas" class="modal"><div class="modal-box largo">
+  <div class="modal-header"><h3 id="med-titulo">Medidas</h3><button onclick="fecharModal('modal-medidas')">✕</button></div>
+  <div class="form-row">
+    <label class="field">Nível de medidas
+      <select id="med-nivel" class="inp">
+        <option value="">Sem medidas</option>
+        <option value="U">Universais</option>
+        <option value="S">Seletivas (com RTP)</option>
+        <option value="A">Adicionais (com RTP)</option>
+      </select></label>
+    <label style="display:flex; gap:6px; align-items:center; font-size:13px; font-weight:600; margin-top:16px;"><input type="checkbox" id="med-rtp"> Tem RTP</label>
+    <label style="display:flex; gap:6px; align-items:center; font-size:13px; font-weight:600; margin-top:16px;"><input type="checkbox" id="med-pei"> Tem PEI</label>
+  </div>
+  <div id="med-grupos"></div>
+  <label class="field">Observações<textarea id="med-obs" rows="2"></textarea></label>
+  <div class="modal-footer"><button class="btn" onclick="fecharModal('modal-medidas')">Cancelar</button><button class="btn btn-primary" onclick="guardarMedidasAluno()">Guardar medidas</button></div>
+</div></div>
+
+<div id="ecra-bloqueio"><div class="caixa">
+  <div style="font-size:34px;">🔒</div>
+  <h3 style="color:var(--primary-dark); margin-top:6px;">Avaliação de Geografia</h3>
+  <input type="password" id="pin-entrada" inputmode="numeric" autocomplete="off" placeholder="PIN" onkeydown="if(event.key==='Enter') desbloquearApp()">
+  <button class="btn btn-primary" style="width:100%; justify-content:center; padding:10px;" onclick="desbloquearApp()">Entrar</button>
+  <p id="pin-erro" class="err" style="font-size:12px; margin-top:8px;"></p>
+  <button class="btn btn-sm" style="margin-top:10px;" onclick="recuperarPIN()">Esqueci-me do PIN</button>
+</div></div>
+
+<div class="toast" id="toast">Alterações gravadas.</div>
+
+<script>
+// ===================================================================
+// CONFIGURAÇÃO NORMATIVA
+// ===================================================================
+const CONFIG_CICLOS = {
+  secundario: {
+    nome: "Geografia A — Ensino Secundário",
+    ponderacoes: { d1: 0.50, d2: 0.40, d3: 0.10 },
+    escalaPadrao: "20",
+    dominios: { d1: "CONHECIMENTO", d2: "COMUNICAÇÃO", d3: "COMPROMISSO" },
+    descritores: {
+      d1: [
+        { min: 0, max: 9.99, nivel: "Insuficiente", txt: "O aluno raramente ou nunca reconheceu e aplicou conhecimentos geográficos em contextos específicos e diversificados do território português." },
+        { min: 10, max: 13.99, nivel: "Suficiente", txt: "O aluno reconheceu e aplicou algumas vezes, conhecimentos geográficos em contextos específicos e diversificados do território português." },
+        { min: 14, max: 17.99, nivel: "Bom", txt: "O aluno reconheceu e aplicou quase sempre, conhecimentos geográficos em contextos específicos e diversificados do território português." },
+        { min: 18, max: 20, nivel: "Muito Bom", txt: "O aluno reconheceu e aplicou sempre conhecimentos geográficos em contextos específicos e diversificados do território português." }
+      ],
+      d2: [
+        { min: 0, max: 9.99, nivel: "Insuficiente", txt: "O aluno raramente ou nunca problematizou e debateu as inter-relações no território português e com outros espaços." },
+        { min: 10, max: 13.99, nivel: "Suficiente", txt: "O aluno, algumas vezes problematizou e debateu as inter-relações no território português e com outros espaços." },
+        { min: 14, max: 17.99, nivel: "Bom", txt: "O aluno, quase sempre, problematizou e debateu as inter-relações no território português e com outros espaços." },
+        { min: 18, max: 20, nivel: "Muito Bom", txt: "O aluno, sempre, problematizou e debateu as inter-relações no território português e com outros espaços." }
+      ],
+      d3: [
+        { min: 0, max: 9.99, nivel: "Insuficiente", txt: "O aluno raramente ou nunca revelou: curiosidade, responsabilidade, autodomínio, persistência, motivação para os objetivos." },
+        { min: 10, max: 13.99, nivel: "Suficiente", txt: "O aluno, algumas vezes, revelou: curiosidade, responsabilidade, autodomínio, persistência, motivação para os objetivos." },
+        { min: 14, max: 17.99, nivel: "Bom", txt: "O aluno, quase sempre, revelou: curiosidade, responsabilidade, autodomínio, persistência, motivação para os objetivos." },
+        { min: 18, max: 20, nivel: "Muito Bom", txt: "O aluno, sempre, revelou: curiosidade, responsabilidade, autodomínio, persistência, motivação para os objetivos." }
+      ]
+    }
+  },
+  basico: {
+    nome: "Geografia — 3.º Ciclo do Ensino Básico",
+    ponderacoes: { d1: 0.70, d2: 0.15, d3: 0.15 },
+    escalaPadrao: "100",
+    dominios: { d1: "CONHECIMENTO GEOGRÁFICO", d2: "MÉTODOS E TÉCNICAS", d3: "COMPROMISSO" },
+    descritores: {
+      d1: [
+        { min: 0, max: 9.99, nivel: "Insuficiente", txt: "O aluno revela dificuldades nos descritores referentes a este domínio." },
+        { min: 10, max: 13.99, nivel: "Suficiente", txt: "O aluno revela que desenvolveu de forma satisfatória os descritores referentes a este domínio." },
+        { min: 14, max: 20, nivel: "Bom", txt: "O aluno revela que desenvolveu de forma consistente os descritores referentes a este domínio." }
+      ],
+      d2: [
+        { min: 0, max: 9.99, nivel: "Insuficiente", txt: "O aluno revela dificuldades nos descritores referentes a este domínio." },
+        { min: 10, max: 13.99, nivel: "Suficiente", txt: "O aluno revela que desenvolveu de forma satisfatória os descritores referentes a este domínio." },
+        { min: 14, max: 20, nivel: "Bom", txt: "O aluno revela que desenvolveu de forma consistente os descritores referentes a este domínio." }
+      ],
+      d3: [
+        { min: 0, max: 9.99, nivel: "Insuficiente", txt: "O aluno revela dificuldade em comprometer-se com a sua aprendizagem em termos de autonomia, curiosidade, responsabilidade, autodomínio e motivação para os objetivos." },
+        { min: 10, max: 13.99, nivel: "Suficiente", txt: "O aluno revela que apresenta algum compromisso com a sua aprendizagem em termos de autonomia, curiosidade, responsabilidade, autodomínio e motivação para os objetivos." },
+        { min: 14, max: 20, nivel: "Bom", txt: "O aluno revela um compromisso consistente com a sua aprendizagem em termos de autonomia, curiosidade, responsabilidade, autodomínio e motivação para os objetivos." }
+      ]
+    }
+  }
+};
+
+// Medidas do DL 54/2018 (art. 8.º, 9.º e 10.º) e adaptações ao processo de avaliação (art. 28.º)
+const MEDIDAS_LEI = {
+  U: { titulo: "Medidas universais (art. 8.º)", itens: [
+    { id: "u_dif", nome: "Diferenciação pedagógica" },
+    { id: "u_aco", nome: "Acomodações curriculares" },
+    { id: "u_enr", nome: "Enriquecimento curricular" },
+    { id: "u_pro", nome: "Promoção do comportamento pró-social" },
+    { id: "u_int", nome: "Intervenção com foco académico ou comportamental em pequenos grupos" }
+  ]},
+  S: { titulo: "Medidas seletivas (art. 9.º)", itens: [
+    { id: "s_pcd", nome: "Percursos curriculares diferenciados" },
+    { id: "s_acn", nome: "Adaptações curriculares não significativas" },
+    { id: "s_app", nome: "Apoio psicopedagógico" },
+    { id: "s_ant", nome: "Antecipação e reforço das aprendizagens" },
+    { id: "s_tut", nome: "Apoio tutorial" }
+  ]},
+  A: { titulo: "Medidas adicionais (art. 10.º)", itens: [
+    { id: "a_fad", nome: "Frequência do ano de escolaridade por disciplinas" },
+    { id: "a_acs", nome: "Adaptações curriculares significativas" },
+    { id: "a_pit", nome: "Plano individual de transição" },
+    { id: "a_ens", nome: "Metodologias e estratégias de ensino estruturado" },
+    { id: "a_aut", nome: "Competências de autonomia pessoal e social" }
+  ]},
+  AV: { titulo: "Adaptações ao processo de avaliação (art. 28.º)", itens: [
+    { id: "v_div", nome: "Diversificação dos instrumentos de recolha de informação" },
+    { id: "v_ace", nome: "Enunciados em formatos acessíveis" },
+    { id: "v_lgp", nome: "Interpretação em LGP" },
+    { id: "v_pro", nome: "Utilização de produtos de apoio" },
+    { id: "v_tem", nome: "Tempo suplementar" },
+    { id: "v_tra", nome: "Transcrição das respostas" },
+    { id: "v_lei", nome: "Leitura de enunciados" },
+    { id: "v_sal", nome: "Sala separada" },
+    { id: "v_pau", nome: "Pausas vigiadas" },
+    { id: "v_cor", nome: "Código de identificação de cores nos enunciados" }
+  ]}
+};
+const NOME_MEDIDA = {};
+Object.values(MEDIDAS_LEI).forEach(g => g.itens.forEach(i => NOME_MEDIDA[i.id] = i.nome));
+const NIVEL_MED_TXT = { U: "Universais", S: "Seletivas", A: "Adicionais" };
+
+// ===================================================================
+// ESTADO
+// ===================================================================
+const STORAGE_KEY = "avaliacao_geografia_ml_v2";
+const OLD_KEYS = ["geo_app_state_monte_lua_v12", "geo_app_state_monte_lua_v11_fix", "geo_app_state_monte_lua"];
+const ANO_INICIAL = "2026/2027";
+// "pessoal" = versão com as turmas do Prof. Cavaco; "partilha" = versão limpa para colegas
+const EDICAO = "pessoal";
+const TURMAS_INICIAIS = EDICAO === "partilha" ? [] : ["7.º B", "9.º A", "9.º B", "9.º C", "9.º D", "9.º E"];
+let AppState = null;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const norm = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
+const novoId = p => p + "_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const clone = o => JSON.parse(JSON.stringify(o));
+
+function novaTurma(nome, ciclo, ano) {
+  const cfg = CONFIG_CICLOS[ciclo];
+  return { id: novoId("t"), anoLetivo: ano, nome, ciclo, ponderacoes: clone(cfg.ponderacoes), dominiosNomes: clone(cfg.dominios), instrumentos: [], alunos: [] };
+}
+function medidasVazias() { return { nivel: "", rtp: false, pei: false, lista: [], sub: [], aval: [], obs: "" }; }
+function novoAluno(num, nome) { return { num, nome, estado: "ativo", notas: {}, med: medidasVazias(), reg: [] }; }
+
+// Submedidas universais tal como aparecem no Inovar (janela «Medidas (DL 54)», AE Monte da Lua, nov. 2026).
+// Formato: "Categoria | Submedida" (ou só "Submedida" quando não há categoria).
+const SUBMEDIDAS_INOVAR = {
+  u_dif: [
+    "Diferenciar os conteúdos.",
+    "Diferenciar os processos de aprendizagem (meios para a compreensão dos conteúdos).",
+    "Diferenciar as produções dos alunos.",
+    "Diferenciar a estruturação do trabalho em aula."
+  ],
+  u_aco: [
+    "Localização do aluno na sala de aula | Sentar o aluno de frente para o quadro",
+    "Localização do aluno na sala de aula | Sentar o aluno perto do professor/apresentação",
+    "Localização do aluno na sala de aula | Ficar junto ao aluno quando está a dar orientações/fazer apresentação",
+    "Localização do aluno na sala de aula | Sentar o aluno junto de um colega modelo positivo",
+    "Apresentação do conteúdo / tarefas e fichas de trabalho | Facultar pistas visuais/gráficos/pré e pós organizadores",
+    "Apresentação do conteúdo / tarefas e fichas de trabalho | Assegurar-se que as orientações são compreendidas",
+    "Apresentação do conteúdo / tarefas e fichas de trabalho | Facultar exemplo do produto final",
+    "Apresentação do conteúdo / tarefas e fichas de trabalho | Facultar esboços escritos/notas orientadoras/notas impressas",
+    "Apresentação do conteúdo / tarefas e fichas de trabalho | Segmentar apresentações longas",
+    "Apresentação do conteúdo / tarefas e fichas de trabalho | Ensinar através de abordagens multissensoriais/manipulativas",
+    "Apresentação do conteúdo / tarefas e fichas de trabalho | Verificar oralmente a compreensão dos pontos-chave",
+    "Apresentação do conteúdo / tarefas e fichas de trabalho | Escrever os pontos-chave no quadro ou em suporte digital",
+    "Apresentação do conteúdo / tarefas e fichas de trabalho | Facultar tempo para responder a perguntas",
+    "Apresentação do conteúdo / tarefas e fichas de trabalho | Ensinar o vocabulário/terminologia específica previamente",
+    "Apresentação do conteúdo / tarefas e fichas de trabalho | Modelar/demonstrar/simular conceitos",
+    "Apresentação do conteúdo / tarefas e fichas de trabalho | Usar as TIC para apoiar o ensino",
+    "Apresentação do conteúdo / tarefas e fichas de trabalho | Permitir a consulta de dicionário",
+    "Apresentação do conteúdo / tarefas e fichas de trabalho | Despenalizar o erro ortográfico",
+    "Apresentação do conteúdo / tarefas e fichas de trabalho | Permitir o uso de calculadora",
+    "Testes | Permitir a consulta de apontamentos/notas",
+    "Testes | Usar preferencialmente itens de escolha múltipla",
+    "Testes | Permitir aos alunos responder através de um gravador",
+    "Testes | Utilizar testes curtos em vez de longos",
+    "Testes | Usar testes orais",
+    "Testes | Permitir aos alunos escrever na folha de teste",
+    "Testes | Permitir a realização do teste num outro horário (flexibilização)",
+    "Testes | Permitir o uso de calculadora",
+    "Testes | Facultar os enunciados impressos apenas num lado.",
+    "Testes | Simplificar a linguagem dos enunciados.",
+    "Testes | Destacar (negritos, sublinhados...) palavras-chave na elaboração dos itens.",
+    "Testes | Utilizar letra com tamanho maior.",
+    "Testes | Ampliar o espaçamento entre linhas.",
+    "Testes | Valorizar itens de resposta de seleção e/ou de resposta curta.",
+    "Instrumentos classificativos (adaptações) | Utilizar produtos de apoio (máquina de escrita braille; máquina de calcular sonora; computador; auxiliares de leitura; software adaptado)",
+    "Instrumentos classificativos (adaptações) | Realizar o instrumento em sala à parte",
+    "Instrumentos classificativos (adaptações) | Sentar em local diferente do habitual",
+    "Instrumentos classificativos (adaptações) | Utilizar equipamento ergonómico",
+    "Instrumentos classificativos (adaptações) | Permitir a presença de intérprete de língua gestual portuguesa",
+    "Instrumentos classificativos (adaptações) | Consultar dicionário de língua portuguesa",
+    "Instrumentos classificativos (adaptações) | Facultar enunciados em formatos acessíveis",
+    "Instrumentos classificativos (adaptações) | Ler os enunciados de forma orientada",
+    "Instrumentos classificativos (adaptações) | Transcrever as respostas dos alunos",
+    "Instrumentos classificativos (adaptações) | Auxiliar no manuseamento do material",
+    "Instrumentos classificativos (adaptações) | Ditar respostas ao docente",
+    "Instrumentos classificativos (adaptações) | Despenalizar o erro ortográfico",
+    "Instrumentos classificativos (adaptações) | Facultar tempo suplementar",
+    "Competências organizativas | Treinar competências organizativas",
+    "Competências organizativas | Utilizar um bloco de notas com as tarefas e trabalhos de casa/planeamento",
+    "Competências organizativas | Permitir pausas em tarefas longas",
+    "Comportamento | Utilizar estratégias de autodeterminação",
+    "Comportamento | Utilizar regras simples e claras",
+    "Comportamento | Assinalar as respostas certas, não as erradas",
+    "Comportamento | Implementar um sistema de gestão de comportamento",
+    "Comportamento | Permitir saídas/entradas da sala de aula/pequenas pausas",
+    "Comportamento | Utilizar semanalmente instrumentos para registo do comportamento"
+  ],
+  u_enr: ["Clubes", "Desporto Escolar", "Projetos"],
+  u_pro: [
+    "Elaboração de um projeto de turma para a promoção do comportamento pró-social, em parceria com o SPO",
+    "Acompanhamento por técnico(s) especializado(s) exterior(es) ao Agrupamento",
+    "Contacto permanente com o Encarregado de Educação",
+    "Assembleias de Turma"
+  ],
+  u_int: [
+    "Com foco académico | Apoio em sala de aula",
+    "Com foco académico | Apoio Educativo (Pré-Escolar e 1º Ciclo)",
+    "Com foco académico | Apoio ao Estudo (2º Ciclo)",
+    "Com foco académico | Apoio por disciplina(s)",
+    "Com foco académico | ORA",
+    "Com foco académico | Apoio Tutorial Específico (ATE - Desp. Normativo n.º10-B/2018)",
+    "Com foco comportamental | Apoio Tutorial",
+    "Com foco comportamental | SPO",
+    "Com foco comportamental | GAPA"
+  ]
+};
+// "Categoria | Submedida" -> { cat, item }
+function partesSub(s) { const k = String(s).replace(/^u_\w+::/, ""); const i = k.lastIndexOf(" | "); return i < 0 ? { cat: "", item: k } : { cat: k.slice(0, i), item: k.slice(i + 3) }; }
+// Texto curto para o quadro: o item; se o mesmo texto existir noutra categoria, junta a categoria
+function textoSub(s) {
+  const { cat, item } = partesSub(s);
+  const repetido = Object.values(AppState.submedidas).flat().filter(x => partesSub(x).item === item).length > 1;
+  return repetido && cat ? `${item} (${cat.toLowerCase()})` : item;
+}
+function marcarPaiSub(cx, uid) {
+  if (!cx.checked) return;
+  const pai = document.querySelector(`#med-grupos input[data-med="U"][value="${uid}"]`);
+  if (pai) pai.checked = true;
+  if (!$("med-nivel").value) $("med-nivel").value = "U";
+}
+
+function catalogoPadrao() {
+  return clone(SUBMEDIDAS_INOVAR);
+}
+
+function estadoPadrao() {
+  return {
+    versao: 2,
+    anoAtivo: ANO_INICIAL,
+    anos: [ANO_INICIAL],
+    anosArquivados: [],
+    turmaAtivaId: null,
+    vista: "S1",
+    escala: "100",
+    cortes: [20, 50, 70, 90],
+    escola: "Agrupamento de Escolas Monte da Lua",
+    submedidas: catalogoPadrao(),
+    ultimoBackup: null,
+    registoConta: EDICAO !== "pessoal",
+    pin: null,
+    dominioVazioZero: EDICAO === "pessoal",
+    regraAno: EDICAO === "pessoal" ? { d1: "todos", d2: "semestres", d3: "s2" } : { d1: "todos", d2: "todos", d3: "todos" },
+    drive: { url: "", chave: "", auto: true, ultima: null, estado: "" },
+    turmas: TURMAS_INICIAIS.map(n => novaTurma(n, "basico", ANO_INICIAL))
+  };
+}
+
+// Converte dados da versão original (ou de backups antigos) para o modelo novo
+function migrar(s) {
+  if (!s || !Array.isArray(s.turmas)) return null;
+  const eraAntiga = !s.versao || s.versao < 2;
+  const st = Object.assign(estadoPadrao(), s);
+  if (eraAntiga) {
+    // na versão pessoal, as turmas de exemplo da versão original saem; na versão para partilha, nada se apaga
+    st.turmas = EDICAO === "partilha" ? (s.turmas || []) : (s.turmas || []).filter(t => !(t.id === "t_10q" || t.id === "t_8a"));
+    st.turmas.forEach(t => {
+      t.ciclo = t.ciclo || "basico";
+      t.anoLetivo = t.anoLetivo || st.anoAtivo;
+      (t.instrumentos || []).forEach(i => { if (!i.sem) i.sem = 1; });
+      (t.alunos || []).forEach(a => {
+        a.estado = a.estado || "ativo";
+        a.notas = a.notas || {};
+        if (!a.med) {
+          a.med = medidasVazias();
+          if (a.dl54 === "MU") a.med.nivel = "U";
+          if (a.dl54 === "MS") { a.med.nivel = "S"; a.med.rtp = true; }
+          if (a.dl54 === "MA") { a.med.nivel = "A"; a.med.rtp = true; }
+        }
+        delete a.dl54;
+      });
+    });
+    const emFalta = TURMAS_INICIAIS.filter(n => !st.turmas.some(t => t.anoLetivo === ANO_INICIAL && norm(t.nome) === norm(n)));
+    if (emFalta.length) {
+      if (!st.anos.includes(ANO_INICIAL)) st.anos.push(ANO_INICIAL);
+      emFalta.forEach(n => st.turmas.push(novaTurma(n, "basico", ANO_INICIAL)));
+    }
+    st.versao = 2;
+    const ativa = st.turmas.find(t => t.id === st.turmaAtivaId) || st.turmas[0];
+    st.escala = ativa && ativa.ciclo === "secundario" ? "20" : "100";
+    delete st.escalaLancamento;
+  }
+  // normalização defensiva
+  if (!Array.isArray(st.anos) || !st.anos.length) st.anos = [ANO_INICIAL];
+  if (!Array.isArray(st.anosArquivados)) st.anosArquivados = [];
+  if (!st.anos.includes(st.anoAtivo)) st.anoAtivo = st.anos[st.anos.length - 1];
+  if (!Array.isArray(st.cortes) || st.cortes.length !== 4) st.cortes = [20, 50, 70, 90];
+  if (!st.submedidas) st.submedidas = catalogoPadrao();
+  MEDIDAS_LEI.U.itens.forEach(i => { if (!Array.isArray(st.submedidas[i.id])) st.submedidas[i.id] = []; });
+  if (Object.values(st.submedidas).every(l => !l.length)) st.submedidas = clone(SUBMEDIDAS_INOVAR); // listas vazias: usar as do Inovar
+  if (!["S1", "S2", "ANO"].includes(st.vista)) st.vista = "S1";
+  if (typeof st.registoConta !== "boolean") st.registoConta = EDICAO !== "pessoal";
+  if (typeof st.dominioVazioZero !== "boolean") st.dominioVazioZero = EDICAO === "pessoal";
+  const regraPadrao = EDICAO === "pessoal" ? { d1: "todos", d2: "semestres", d3: "s2" } : { d1: "todos", d2: "todos", d3: "todos" };
+  st.regraAno = Object.assign({}, regraPadrao, st.regraAno || {});
+  st.drive = Object.assign({ url: "", chave: "", auto: true, ultima: null, estado: "" }, st.drive || {});
+  if (st.pin && !(st.pin.h && st.pin.salt)) st.pin = null;
+  st.turmas.forEach(t => {
+    if (!CONFIG_CICLOS[t.ciclo]) t.ciclo = "basico";
+    if (!t.ponderacoes) t.ponderacoes = clone(CONFIG_CICLOS[t.ciclo].ponderacoes);
+    if (!t.dominiosNomes) t.dominiosNomes = clone(CONFIG_CICLOS[t.ciclo].dominios);
+    if (!Array.isArray(t.instrumentos)) t.instrumentos = [];
+    if (!Array.isArray(t.alunos)) t.alunos = [];
+    t.instrumentos.forEach(i => { i.sem = Number(i.sem) === 2 ? 2 : 1; });
+    t.alunos.forEach(a => { a.notas = a.notas || {}; a.med = Object.assign(medidasVazias(), a.med || {}); a.estado = a.estado || "ativo"; if (!Array.isArray(a.reg)) a.reg = []; });
+  });
+  return st;
+}
+
+function carregarAppState() {
+  let raw = null;
+  try {
+    raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) { for (const k of OLD_KEYS) { raw = localStorage.getItem(k); if (raw) break; } }
+  } catch (e) { console.warn("Sem acesso ao armazenamento do navegador", e); }
+  let st = null;
+  try { st = raw ? migrar(JSON.parse(raw)) : null; } catch (e) { console.warn("Dados ilegíveis", e); }
+  AppState = st || estadoPadrao();
+  garantirTurmaAtiva();
+}
+
+function guardarEstado(mostrarToast) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(AppState)); }
+  catch (e) { alert("Não foi possível gravar no navegador: " + e.message + "\nDescarrega já um backup."); return; }
+  if (typeof atualizarAvisoBackup === "function" && $("banner-backup")) atualizarAvisoBackup();
+  if (mostrarToast) toast("Alterações gravadas.");
+}
+function toast(msg) { const t = $("toast"); t.innerText = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2000); }
+
+// ===================================================================
+// CONTEXTO
+// ===================================================================
+const turmasDoAno = () => AppState.turmas.filter(t => t.anoLetivo === AppState.anoAtivo);
+function garantirTurmaAtiva() {
+  const lista = turmasDoAno();
+  if (!lista.some(t => t.id === AppState.turmaAtivaId)) AppState.turmaAtivaId = lista.length ? lista[0].id : null;
+}
+function obterTurmaAtiva() { return AppState.turmas.find(t => t.id === AppState.turmaAtivaId && t.anoLetivo === AppState.anoAtivo) || null; }
+const anoArquivado = () => AppState.anosArquivados.includes(AppState.anoAtivo);
+function bloqueado() { if (anoArquivado()) { alert("Este ano letivo está arquivado (só leitura)."); return true; } return false; }
+const textoVista = v => ({ S1: "1.º semestre", S2: "2.º semestre (só elementos do 2.º S)", ANO: "Classificação final do ano" })[v || AppState.vista];
+function instsVista(t, vista) {
+  vista = vista || AppState.vista;
+  if (vista === "ANO") return t.instrumentos.slice().sort((a, b) => a.sem - b.sem);
+  const s = vista === "S1" ? 1 : 2;
+  return t.instrumentos.filter(i => i.sem === s);
+}
+const alunosAtivos = t => t.alunos.filter(a => a.estado !== "saiu");
+function ordenarAlunos(t) { t.alunos.sort((a, b) => a.num - b.num); }
+
+function ponderacoes(t) {
+  const c = CONFIG_CICLOS[t.ciclo].ponderacoes;
+  return { d1: t.ponderacoes?.d1 ?? c.d1, d2: t.ponderacoes?.d2 ?? c.d2, d3: t.ponderacoes?.d3 ?? c.d3 };
+}
+function nomesDom(t) {
+  const p = ponderacoes(t), c = CONFIG_CICLOS[t.ciclo].dominios, n = t.dominiosNomes || {};
+  const r = {};
+  ["d1", "d2", "d3"].forEach(d => { r["raw" + d.slice(1)] = n[d] || c[d]; r[d] = `${n[d] || c[d]} (${Math.round(p[d] * 100)}%)`; });
+  return r;
+}
+
+// ===================================================================
+// CÁLCULOS
+// ===================================================================
+const eDisp = v => v === "DISP" || v === "D";
+const temNota = v => v !== null && v !== undefined && v !== "" && !eDisp(v) && !isNaN(v);
+
+function nivelDePct(pct, ciclo) {
+  if (pct === null || isNaN(pct)) return null;
+  if (ciclo === "secundario") return Math.round((pct / 100) * 20);
+  const c = AppState.cortes;
+  if (pct < c[0]) return 1; if (pct < c[1]) return 2; if (pct < c[2]) return 3; if (pct < c[3]) return 4; return 5;
+}
+
+// --- Registo em aula ---
+const semNaVista = (s, vista) => { vista = vista || AppState.vista; return vista === "ANO" || (vista === "S1" ? s === 1 : s === 2); };
+function nivelParaPct(n) {
+  const c = AppState.cortes, b = [0, c[0], c[1], c[2], c[3], 100];
+  return (b[n - 1] + b[n]) / 2;
+}
+function registosVista(a, k, vista) { return (a.reg || []).filter(r => r.k === k && semNaVista(r.s, vista)); }
+function valorRA(a, vista) {
+  if (!AppState.registoConta) return null;
+  const regs = registosVista(a, "comp", vista);
+  return regs.length ? regs.reduce((s, r) => s + nivelParaPct(r.v), 0) / regs.length : null;
+}
+const haRA = (t, vista) => AppState.registoConta && t.alunos.some(a => valorRA(a, vista) !== null);
+function resumoRegistos(a, vista) {
+  const comp = registosVista(a, "comp", vista);
+  return { nComp: comp.length, mediaComp: comp.length ? comp.reduce((s, r) => s + r.v, 0) / comp.length : null,
+           mat: registosVista(a, "mat", vista).length, tpc: registosVista(a, "tpc", vista).length };
+}
+
+// Regras da classificação do ano (vista «Final»), por domínio:
+//  "todos"     — média de todos os elementos do ano
+//  "semestres" — média das médias dos dois semestres
+//  "s2"        — só o 2.º semestre
+const REGRAS_ANO = { todos: "Média de todos os elementos do ano", semestres: "Média das médias dos dois semestres", s2: "Só o 2.º semestre" };
+function calcular(aluno, t, vista) {
+  vista = vista || AppState.vista;
+  const p = ponderacoes(t);
+  const med = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+  const mediaVista = (d, v) => {
+    const vals = instsVista(t, v).filter(i => i.dom === d).map(i => aluno.notas[i.id]).filter(temNota).map(Number);
+    if (d === "d3") { const ra = valorRA(aluno, v); if (ra !== null) vals.push(ra); }
+    return med(vals);
+  };
+  const mediaDom = d => {
+    if (vista !== "ANO") return mediaVista(d, vista);
+    const regra = (AppState.regraAno || {})[d] || "todos";
+    if (regra === "s2") return mediaVista(d, "S2");
+    if (regra === "semestres") return med([mediaVista(d, "S1"), mediaVista(d, "S2")].filter(x => x !== null));
+    return mediaVista(d, "ANO");
+  };
+  const m1Pct = mediaDom("d1"), m2Pct = mediaDom("d2"), m3Pct = mediaDom("d3");
+  const algumaNota = [m1Pct, m2Pct, m3Pct].some(x => x !== null);
+  let soma = 0, peso = 0;
+  [[m1Pct, p.d1], [m2Pct, p.d2], [m3Pct, p.d3]].forEach(([m, w]) => {
+    if (m !== null) { soma += m * w; peso += w; }
+    else if (AppState.dominioVazioZero && algumaNota) peso += w; // domínio sem notas conta 0 (como na folha)
+  });
+  const totalPct = peso ? soma / peso : null;
+  const emFalta = instsVista(t, vista).filter(i => !temNota(aluno.notas[i.id]) && !eDisp(aluno.notas[i.id])).length;
+  return { m1Pct, m2Pct, m3Pct, totalPct, nivelFinal: nivelDePct(totalPct, t.ciclo), parcial: !AppState.dominioVazioZero && peso > 0 && peso < 0.999, emFalta };
+}
+
+function mencao(t, d, pct) {
+  if (pct === null || isNaN(pct)) return { nivel: "—", txt: "Sem avaliação" };
+  const n20 = (pct / 100) * 20;
+  const lista = CONFIG_CICLOS[t.ciclo].descritores[d];
+  return lista.find(x => n20 >= x.min && n20 <= x.max) || (n20 > 20 ? lista[lista.length - 1] : lista[0]);
+}
+const classeMencao = m => ({ "Muito Bom": "mencao-mb", "Bom": "mencao-bom", "Suficiente": "mencao-suf", "Insuficiente": "mencao-ins" })[m] || "";
+const paraPct = (v, esc) => (Number(v) / Number(esc)) * 100;
+const dePct = (pct, esc, dec = 1) => (pct === null || pct === undefined || isNaN(pct)) ? "" : Number(((pct / 100) * Number(esc)).toFixed(dec));
+function fmtPct(t, pct) { if (pct === null || isNaN(pct)) return "—"; return t.ciclo === "secundario" ? ((pct / 100) * 20).toFixed(1) + " val" : pct.toFixed(1) + "%"; }
+function fmtNivel(t, n) { if (n === null) return "—"; return t.ciclo === "secundario" ? n + " val" : "Nível " + n; }
+const positivo = (t, n) => t.ciclo === "secundario" ? n >= 10 : n >= 3;
+
+function lerNumero(str) {
+  const s = String(str).trim().replace(/\s/g, "").replace(",", ".").replace(/%$/, "");
+  if (s === "") return null;
+  const n = Number(s);
+  return isNaN(n) ? NaN : n;
+}
+
+// Procura de aluno: número primeiro; nome por correspondência exata, depois parcial só se for única
+function encontrarAluno(t, num, nome) {
+  if (num !== null && num !== undefined && !isNaN(num)) {
+    const a = t.alunos.find(x => x.num === num);
+    if (a) return a;
+  }
+  if (nome) {
+    const n = norm(nome);
+    const exato = t.alunos.filter(x => norm(x.nome) === n);
+    if (exato.length === 1) return exato[0];
+    const parcial = t.alunos.filter(x => norm(x.nome).startsWith(n + " ") || norm(x.nome).includes(" " + n + " ") || norm(x.nome).endsWith(" " + n));
+    if (parcial.length === 1) return parcial[0];
+  }
+  return null;
+}
+
+// ===================================================================
+// INICIALIZAÇÃO E NAVEGAÇÃO
+// ===================================================================
+let vistaAtual = "grelha";
+function inicializar() {
+  carregarAppState();
+  guardarEstado(false);
+  atualizarTudo();
+  if (AppState.pin) bloquearApp();
+  const d = AppState.drive;
+  if (d && d.url && d.chave && d.auto !== false && navigator.onLine !== false) setTimeout(() => sincronizarDrive(true), 400);
+}
+function atualizarSelectores() {
+  $("ctx-ano-letivo").innerHTML = AppState.anos.map(a => `<option value="${esc(a)}" ${a === AppState.anoAtivo ? "selected" : ""}>${esc(a)}${AppState.anosArquivados.includes(a) ? " 🔒" : ""}</option>`).join("");
+  const lista = turmasDoAno();
+  $("ctx-turma").innerHTML = lista.length ? lista.map(t => `<option value="${t.id}" ${t.id === AppState.turmaAtivaId ? "selected" : ""}>${esc(t.nome)}</option>`).join("") : `<option value="">(sem turmas)</option>`;
+  ["S1", "S2", "ANO"].forEach(v => $("sem-" + v).classList.toggle("on", AppState.vista === v));
+  $("banner-arquivo").classList.toggle("ativo", anoArquivado());
+  $("sel-escala").value = AppState.escala;
+  $("txt-ultimo-backup").innerText = AppState.ultimoBackup ? "Último backup: " + AppState.ultimoBackup : "Ainda sem backup";
+  atualizarAvisoBackup();
+}
+function atualizarAvisoBackup() {
+  // aviso de backup atrasado (só quando já há alunos)
+  const temDados = AppState.turmas.some(t => t.alunos.length);
+  const dias = AppState.ultimoBackup ? Math.floor((new Date(hojeISO()) - new Date(AppState.ultimoBackup)) / 86400000) : null;
+  const avisar = temDados && (dias === null || dias > 7);
+  $("banner-backup").classList.toggle("ativo", avisar);
+  if (avisar) $("txt-banner-backup").innerText = dias === null ? "⚠️ Ainda não fizeste nenhuma cópia de segurança. Se o navegador for limpo, perdes tudo." : `⚠️ A última cópia de segurança foi há ${dias} dias.`;
+  $("btn-bloquear").style.display = AppState.pin ? "inline-flex" : "none";
+  atualizarEstadoDrive();
+}
+function hojeISO() { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); }
+function atualizarTudo() { atualizarSelectores(); navegar(vistaAtual); }
+function selecionarAnoLetivo(ano) { AppState.anoAtivo = ano; garantirTurmaAtiva(); guardarEstado(false); atualizarTudo(); }
+function selecionarTurmaPorId(id) {
+  if (!id) return;
+  const antes = obterTurmaAtiva(), depois = AppState.turmas.find(t => t.id === id);
+  if (depois && (!antes || antes.ciclo !== depois.ciclo)) AppState.escala = CONFIG_CICLOS[depois.ciclo].escalaPadrao;
+  AppState.turmaAtivaId = id; guardarEstado(false); atualizarTudo();
+}
+function mudarVista(v) { AppState.vista = v; guardarEstado(false); atualizarTudo(); }
+function mudarEscala(e) { AppState.escala = e; guardarEstado(false); renderizarGrelha(); }
+
+const VISTAS = ["grelha", "registo", "estatisticas", "ficha", "reporte", "medidas", "instrumentos", "turmas", "criterios", "anos", "backup"];
+function navegar(view) {
+  vistaAtual = view;
+  VISTAS.forEach(v => { $("view-" + v).style.display = v === view ? "block" : "none"; $("btn-v-" + v).classList.toggle("active", v === view); });
+  ({ grelha: renderizarGrelha, registo: renderizarRegisto, estatisticas: renderizarEstatisticas, ficha: renderizarFicha, reporte: renderizarReporte, medidas: renderizarMedidas,
+     instrumentos: renderizarInstrumentos, turmas: renderizarTurmas, criterios: renderizarCriterios, anos: renderizarAnos, backup: renderizarBackup })[view]();
+}
+function semTurma(contId) { $(contId).innerHTML = `<div class="vazio">Não há turma selecionada neste ano letivo. Cria uma em «Turmas &amp; Alunos».</div>`; }
+
+// ===================================================================
+// GRELHA
+// ===================================================================
+function badgeMedidas(a, idx) {
+  const m = a.med || {};
+  const av = (m.aval || []).length ? " ⏱" : "";
+  if (m.nivel) return `<span class="badge-med ${m.nivel}" onclick="abrirMedidas(${idx})" title="Medidas ${NIVEL_MED_TXT[m.nivel]}${m.rtp ? " · RTP" : ""}${m.pei ? " · PEI" : ""}${av ? " · adaptações na avaliação" : ""}">${m.nivel}${m.rtp ? "·RTP" : ""}${av}</span>`;
+  return `<span class="badge-add" onclick="abrirMedidas(${idx})" title="Registar medidas DL 54/2018">+</span>`;
+}
+
+function renderizarGrelha() {
+  const t = obterTurmaAtiva();
+  if (!t) { $("grelha-titulo").innerText = "Sem turma"; $("grelha-desc").innerText = ""; $("tbl-head").innerHTML = ""; $("tbl-body").innerHTML = `<tr><td class="vazio">Cria uma turma em «Turmas &amp; Alunos».</td></tr>`; return; }
+  const cfg = CONFIG_CICLOS[t.ciclo], dn = nomesDom(t), escA = Number(AppState.escala), arq = anoArquivado();
+  $("grelha-titulo").innerText = `${t.nome} — ${textoVista()}${arq ? " 🔒" : ""}`;
+  $("grelha-desc").innerText = `${cfg.nome} · ${t.anoLetivo} · ${dn.d1} | ${dn.d2} | ${dn.d3}`;
+  $("scale-info-txt").innerText = `as notas são escritas e mostradas em ${$("sel-escala").selectedOptions[0].text}; internamente tudo é guardado em percentagem.`;
+  ["1", "2", "3"].forEach(k => $("lbl-m" + k).innerText = "Média " + dn["raw" + k]);
+  $("lbl-mt").innerText = t.ciclo === "secundario" ? "Média turma (0-20)" : "Média de níveis";
+
+  const insts = instsVista(t);
+  const porDom = d => insts.filter(i => i.dom === d);
+  const doms = ["d1", "d2", "d3"];
+  const mostrarSem = AppState.vista === "ANO";
+  const ra = haRA(t);
+  const extra = d => (d === "d3" && ra ? 1 : 0);
+  if (!t.alunos.length) { $("tbl-head").innerHTML = ""; $("tbl-body").innerHTML = `<tr><td class="vazio">Esta turma ainda não tem alunos. Importa a lista em «Turmas &amp; Alunos».</td></tr>`; atualizarCards(t); return; }
+
+  $("tbl-head").innerHTML = `
+    <tr>
+      <th rowspan="2" style="text-align:center;">N.º</th><th rowspan="2" style="min-width:190px;">Nome</th>
+      ${doms.map(d => `<th colspan="${porDom(d).length + 1 + extra(d)}" class="th-${d}" style="text-align:center;">${esc(dn[d])}</th>`).join("")}
+      <th colspan="2" class="th-fin" style="text-align:center;">CLASSIFICAÇÃO</th>
+      <th colspan="3" class="th-mencoes" style="text-align:center;">MENÇÕES</th>
+    </tr>
+    <tr>
+      ${doms.map(d => porDom(d).map(i => `<th class="th-${d}" style="text-align:center;" title="${esc(i.label)}">${i.drive ? "☁ " : ""}${esc(i.id)}${mostrarSem ? `<span class="sem-tag">${i.sem}.º S</span>` : ""}</th>`).join("")
+        + (extra(d) ? `<th class="th-d3" style="text-align:center;" title="Registo em aula (média dos registos de Compromisso)">RA<span class="sem-tag">aula</span></th>` : "")
+        + `<th class="th-${d}" style="text-align:center;">Média</th>`).join("")}
+      <th class="th-fin">${t.ciclo === "secundario" ? "0-20" : "%"}</th><th class="th-fin">${t.ciclo === "secundario" ? "Nota" : "Nível"}</th>
+      ${doms.map(d => `<th class="th-mencoes">${esc(dn["raw" + d.slice(1)].split(" ")[0])}</th>`).join("")}
+    </tr>`;
+
+  let rows = "";
+  t.alunos.forEach((a, r) => {
+    const res = calcular(a, t);
+    let c = 0;
+    const celulas = d => porDom(d).map(i => {
+      const raw = a.notas[i.id];
+      const val = eDisp(raw) ? "D" : dePct(raw, escA, 1);
+      return `<td style="text-align:center;"><input type="text" class="score-input" value="${val}" data-r="${r}" data-c="${c++}" ${arq ? "disabled" : ""} ${i.drive ? 'readonly title="Vem da Drive — altera na folha de cálculo" style="background:#f1f5f9; color:#475569;"' : ""}
+        onkeydown="navegarTeclado(event,${r},${c - 1})" onfocus="this.select()" onchange="atualizarNota(${r},'${esc(i.id)}',this)"></td>`;
+    }).join("")
+      + (extra(d) ? (() => { const v = valorRA(a); const rs = resumoRegistos(a); return `<td style="text-align:center; color:#92400e;" title="${rs.nComp} registo(s) de Compromisso">${v === null ? "—" : dePct(v, escA, 1)}</td>`; })() : "")
+      + `<td style="text-align:center; font-weight:700; background:#f8fafc;">${fmtPct(t, res["m" + d.slice(1) + "Pct"])}</td>`;
+    const mm = doms.map(d => mencao(t, d, res["m" + d.slice(1) + "Pct"]));
+    rows += `<tr class="${a.estado === "saiu" ? "saiu" : ""}">
+      <td style="text-align:center; font-weight:700;">${a.num}</td>
+      <td><strong>${esc(a.nome)}</strong>${a.estado === "saiu" ? ' <span class="muted">(saiu)</span>' : ""} ${badgeMedidas(a, r)}</td>
+      ${doms.map(celulas).join("")}
+      <td style="text-align:center; font-weight:700;">${res.totalPct === null ? "—" : (t.ciclo === "secundario" ? ((res.totalPct / 100) * 20).toFixed(1) : res.totalPct.toFixed(1) + "%")}${res.parcial ? ' <span title="Falta(m) domínio(s) sem notas — resultado parcial">*</span>' : ""}</td>
+      <td style="text-align:center;">${res.nivelFinal === null ? "—" : `<span class="badge ${positivo(t, res.nivelFinal) ? "badge-pos" : "badge-neg"}">${fmtNivel(t, res.nivelFinal)}</span>`}</td>
+      ${mm.map(m => `<td style="text-align:center;"><span class="badge-mencao ${classeMencao(m.nivel)}" title="${esc(m.txt)}">${m.nivel}</span></td>`).join("")}
+    </tr>`;
+  });
+  $("tbl-body").innerHTML = rows;
+  if (!insts.length) $("tbl-body").insertAdjacentHTML("afterbegin", `<tr><td colspan="20" class="warn" style="white-space:normal;">Ainda não há elementos de avaliação no ${textoVista().toLowerCase()}. Cria-os em «Elementos de Avaliação» ou cola uma tabela de Forms.</td></tr>`);
+  atualizarCards(t);
+}
+
+function atualizarCards(t) {
+  const calcs = alunosAtivos(t).map(a => calcular(a, t));
+  const med = arr => { const v = arr.filter(x => x !== null && !isNaN(x)); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  ["1", "2", "3"].forEach(k => { const m = med(calcs.map(c => c["m" + k + "Pct"])); $("val-m" + k).innerText = m === null ? "-" : fmtPct(t, m); });
+  const mn = med(calcs.map(c => c.nivelFinal));
+  $("val-mt").innerText = mn === null ? "-" : mn.toFixed(1);
+}
+
+function navegarTeclado(e, r, c) {
+  let nr = r, nc = c;
+  if (e.key === "ArrowDown" || e.key === "Enter") { nr++; e.preventDefault(); }
+  else if (e.key === "ArrowUp") { nr--; e.preventDefault(); }
+  else if (e.key === "ArrowRight" && e.target.selectionEnd === e.target.value.length) { nc++; e.preventDefault(); }
+  else if (e.key === "ArrowLeft" && e.target.selectionStart === 0) { nc--; e.preventDefault(); }
+  else return;
+  const el = document.querySelector(`input[data-r="${nr}"][data-c="${nc}"]`);
+  if (el) { e.target.dispatchEvent(new Event("change")); el.focus(); el.select(); }
+}
+
+function atualizarNota(r, instId, input) {
+  if (bloqueado()) { renderizarGrelha(); return; }
+  const t = obterTurmaAtiva(), a = t.alunos[r];
+  const v = String(input.value).trim().toUpperCase();
+  const anterior = a.notas[instId];
+  if (v === "D" || v === "DISP" || v === "X") a.notas[instId] = "DISP";
+  else if (v === "") delete a.notas[instId];
+  else {
+    const n = lerNumero(v);
+    const pct = isNaN(n) ? NaN : paraPct(n, AppState.escala);
+    if (isNaN(pct) || pct < 0 || pct > 100) { input.classList.add("invalido"); toast(`Valor inválido para ${a.nome}: «${input.value}»`); return; }
+    a.notas[instId] = Number(pct.toFixed(2));
+  }
+  if (anterior === a.notas[instId]) return;
+  guardarEstado(false);
+  // atualização sem perder o foco: só refaz se não houver célula focada noutro sítio
+  const ativo = document.activeElement;
+  const pos = ativo && ativo.dataset ? [ativo.dataset.r, ativo.dataset.c] : null;
+  renderizarGrelha();
+  if (pos && pos[0] !== undefined) { const el = document.querySelector(`input[data-r="${pos[0]}"][data-c="${pos[1]}"]`); if (el) { el.focus(); el.select(); } }
+}
+
+// ===================================================================
+// COLAR NOTAS — 1 ELEMENTO
+// ===================================================================
+function opcoesDominio(t) { const dn = nomesDom(t); return ["d1", "d2", "d3"].map(d => `<option value="${d}">${esc(dn[d])}</option>`).join(""); }
+function fecharModal(id) { $(id).classList.remove("aberto"); }
+function abrirModalColar() {
+  const t = obterTurmaAtiva(); if (!t) return alert("Seleciona uma turma.");
+  if (bloqueado()) return;
+  const insts = instsVista(t).filter(i => !i.drive);
+  $("colar-elemento").innerHTML = insts.map(i => `<option value="${esc(i.id)}">${esc(i.id)} — ${esc(i.label)} (${i.sem}.º S)</option>`).join("");
+  $("colar-destino").value = insts.length ? "existente" : "novo";
+  alternarDestinoColar();
+  $("colar-novo-dom").innerHTML = opcoesDominio(t);
+  $("colar-novo-sem").value = AppState.vista === "S2" ? "2" : "1";
+  $("colar-escala").value = AppState.escala;
+  $("colar-texto").value = ""; $("colar-feedback").innerHTML = "";
+  $("modal-colar").classList.add("aberto");
+}
+function alternarDestinoColar() {
+  const novo = $("colar-destino").value === "novo";
+  $("campo-colar-existente").style.display = novo ? "none" : "flex";
+  $("bloco-colar-novo").style.display = novo ? "flex" : "none";
+}
+function aplicarColar() {
+  const t = obterTurmaAtiva(); if (!t || bloqueado()) return;
+  const texto = $("colar-texto").value.trim();
+  if (!texto) return alert("Cola as notas na caixa.");
+  let elId;
+  if ($("colar-destino").value === "novo") {
+    elId = $("colar-novo-cod").value.trim().toUpperCase();
+    const label = $("colar-novo-label").value.trim();
+    if (!elId || !label) return alert("Indica o código e a designação do novo elemento.");
+    if (t.instrumentos.some(i => i.id === elId)) return alert(`Já existe o elemento ${elId} nesta turma. Escolhe-o em «Elemento existente».`);
+  } else {
+    elId = $("colar-elemento").value;
+    if (!elId) return alert("Escolhe o elemento.");
+  }
+  const escala = Number($("colar-escala").value);
+  const linhas = texto.split(/\r?\n/).filter(l => l.trim() !== "");
+  const ativos = t.alunos.filter(a => a.estado !== "saiu");
+  const pendentes = [], falhas = [];
+  linhas.forEach((linha, idx) => {
+    const cols = linha.split(/\t|;/).map(c => c.trim());
+    const cheias = cols.filter(c => c !== "");
+    let num = null, nome = "", nota = "";
+    if (cheias.length === 1) { nota = cheias[0]; const a = ativos[idx]; if (a) num = a.num; }
+    else if (cheias.length === 2) { if (/^\d+$/.test(cheias[0])) { num = parseInt(cheias[0]); } else nome = cheias[0]; nota = cheias[1]; }
+    else if (cheias.length >= 3) { if (/^\d+$/.test(cheias[0])) num = parseInt(cheias[0]); nome = cheias[1]; nota = cheias[cheias.length - 1]; }
+    if (idx === 0 && isNaN(lerNumero(nota)) && !/^(d|disp|x)$/i.test(nota)) return; // linha de cabeçalho
+    const a = encontrarAluno(t, num, nome);
+    if (!a) { falhas.push(`Linha ${idx + 1}: aluno não encontrado (${esc(linha)})`); return; }
+    if (/^(d|disp|x)$/i.test(nota)) { pendentes.push([a, "DISP"]); return; }
+    const n = lerNumero(nota);
+    if (n === null) return;
+    const pct = paraPct(n, escala);
+    if (isNaN(pct) || pct < 0 || pct > 100) { falhas.push(`${esc(a.nome)}: valor inválido «${esc(nota)}» na escala 0–${escala}`); return; }
+    pendentes.push([a, Number(pct.toFixed(2))]);
+  });
+  if (falhas.length) {
+    $("colar-feedback").innerHTML = `<div class="warn"><strong>Nada foi gravado.</strong> Corrige estas linhas e volta a aplicar:<br>${falhas.join("<br>")}</div>`;
+    return;
+  }
+  if ($("colar-destino").value === "novo") t.instrumentos.push({ id: elId, label: $("colar-novo-label").value.trim(), dom: $("colar-novo-dom").value, sem: Number($("colar-novo-sem").value) });
+  pendentes.forEach(([a, v]) => a.notas[elId] = v);
+  guardarEstado(true); fecharModal("modal-colar"); renderizarGrelha();
+  toast(`${pendentes.length} nota(s) lançadas em ${elId}.`);
+}
+
+// ===================================================================
+// COLAR TABELA DE FORMS (VÁRIAS COLUNAS)
+// ===================================================================
+let formsAnalise = null;
+function abrirModalForms() {
+  const t = obterTurmaAtiva(); if (!t) return alert("Seleciona uma turma."); if (bloqueado()) return;
+  $("forms-dom").innerHTML = opcoesDominio(t);
+  $("forms-sem").value = AppState.vista === "S2" ? "2" : "1";
+  $("forms-escala").value = "100";
+  $("forms-texto").value = ""; $("forms-preview").innerHTML = ""; $("btn-forms-aplicar").disabled = true; formsAnalise = null;
+  $("modal-forms").classList.add("aberto");
+}
+function analisarForms() {
+  const t = obterTurmaAtiva();
+  const linhas = $("forms-texto").value.split(/\r?\n/).filter(l => l.trim() !== "");
+  if (linhas.length < 2) { $("forms-preview").innerHTML = `<div class="warn">Cola a tabela com a linha de cabeçalhos e pelo menos um aluno.</div>`; return; }
+  const sep = linhas[0].includes("\t") ? "\t" : ";";
+  const cab = linhas[0].split(sep).map(c => c.trim());
+  const dados = linhas.slice(1).map(l => l.split(sep).map(c => c.trim()));
+  const iNum = cab.findIndex(h => /^(n\.?\s*º?|nº|n\.º|num|numero|número|n)$/i.test(norm(h).replace(/\s/g, "")) || /^n\.?º$/i.test(h.trim()));
+  const iNome = cab.findIndex(h => /nome|aluno/i.test(norm(h)));
+  const excluir = /mail|data|hora|carimbo|turma|processo/i;
+  const prefixo = ($("forms-prefixo").value.trim() || "F").toUpperCase();
+  const colunas = [];
+  cab.forEach((h, j) => {
+    if (j === iNum || j === iNome || !h || excluir.test(norm(h))) return;
+    const valores = dados.map(r => r[j] ?? "");
+    const numericos = valores.filter(v => v !== "" && !isNaN(lerNumero(v)) || /^(d|disp)$/i.test(v)).length;
+    if (!numericos) return;
+    const dig = h.match(/(\d+)/);
+    let cod = prefixo + (dig ? dig[1] : (colunas.length + 1));
+    const existente = t.instrumentos.find(i => norm(i.label) === norm(h));
+    if (existente) cod = existente.id;
+    colunas.push({ j, header: h, cod, n: numericos });
+  });
+  if (iNum < 0 && iNome < 0) { $("forms-preview").innerHTML = `<div class="warn">Não encontrei a coluna «N.º» nem «Nome» no cabeçalho. Confirma que copiaste a linha de cabeçalhos.</div>`; return; }
+  if (!colunas.length) { $("forms-preview").innerHTML = `<div class="warn">Não encontrei colunas com notas.</div>`; return; }
+  const alunosLinha = dados.map(r => {
+    const num = iNum >= 0 && /^\d+$/.test(r[iNum] || "") ? parseInt(r[iNum]) : null;
+    const nome = iNome >= 0 ? r[iNome] : "";
+    return { r, a: encontrarAluno(t, num, nome), txt: (num ?? "") + " " + nome };
+  });
+  const naoEnc = alunosLinha.filter(x => !x.a);
+  formsAnalise = { colunas, alunosLinha };
+  $("forms-preview").innerHTML = `
+    <p style="font-size:12.5px; margin:8px 0;"><span class="ok">${alunosLinha.length - naoEnc.length} aluno(s) reconhecido(s)</span> pela ${iNum >= 0 ? "coluna N.º" : "coluna Nome"}.
+      ${naoEnc.length ? `<span class="err">${naoEnc.length} linha(s) sem correspondência: ${naoEnc.map(x => esc(x.txt.trim())).join("; ")}</span>` : ""}</p>
+    <table style="max-width:700px;"><thead><tr><th>Usar</th><th>Coluna</th><th>Código na app</th><th>Situação</th><th>Notas</th></tr></thead><tbody>
+    ${colunas.map((c, k) => {
+      const ex = t.instrumentos.find(i => i.id === c.cod);
+      return `<tr><td style="text-align:center;"><input type="checkbox" id="fc-use-${k}" checked></td><td>${esc(c.header)}</td>
+        <td><input type="text" id="fc-cod-${k}" value="${esc(c.cod)}" class="inp" style="width:80px; padding:3px 6px;"></td>
+        <td>${ex ? `atualiza <strong>${esc(ex.id)}</strong> (${ex.sem}.º S)` : "cria elemento novo"}</td><td style="text-align:center;">${c.n}</td></tr>`;
+    }).join("")}</tbody></table>`;
+  $("btn-forms-aplicar").disabled = false;
+}
+function aplicarForms() {
+  const t = obterTurmaAtiva(); if (!t || !formsAnalise || bloqueado()) return;
+  const escala = Number($("forms-escala").value), dom = $("forms-dom").value, sem = Number($("forms-sem").value);
+  const pend = [], falhas = [], criar = [];
+  formsAnalise.colunas.forEach((c, k) => {
+    if (!$("fc-use-" + k).checked) return;
+    const cod = $("fc-cod-" + k).value.trim().toUpperCase();
+    if (!cod) { falhas.push(`Coluna «${esc(c.header)}» sem código.`); return; }
+    if (!t.instrumentos.some(i => i.id === cod) && !criar.some(x => x.id === cod)) criar.push({ id: cod, label: c.header, dom, sem });
+    formsAnalise.alunosLinha.forEach(x => {
+      if (!x.a) return;
+      const v = (x.r[c.j] ?? "").trim();
+      if (v === "") return;
+      if (/^(d|disp)$/i.test(v)) { pend.push([x.a, cod, "DISP"]); return; }
+      const pct = paraPct(lerNumero(v), escala);
+      if (isNaN(pct) || pct < 0 || pct > 100) { falhas.push(`${esc(x.a.nome)} — ${esc(c.header)}: «${esc(v)}» fora da escala 0–${escala}`); return; }
+      pend.push([x.a, cod, Number(pct.toFixed(2))]);
+    });
+  });
+  if (falhas.length) { $("forms-preview").insertAdjacentHTML("afterbegin", `<div class="warn"><strong>Nada foi gravado.</strong><br>${falhas.join("<br>")}</div>`); return; }
+  criar.forEach(i => t.instrumentos.push(i));
+  pend.forEach(([a, cod, v]) => a.notas[cod] = v);
+  guardarEstado(true); fecharModal("modal-forms"); renderizarGrelha();
+  toast(`${pend.length} nota(s) lançadas; ${criar.length} elemento(s) criados.`);
+}
+
+// ===================================================================
+// INOVAR
+// ===================================================================
+function abrirModalInovar() {
+  const t = obterTurmaAtiva(); if (!t) return alert("Seleciona uma turma.");
+  const lista = alunosAtivos(t).slice().sort((a, b) => a.num - b.num);
+  const linhas = lista.map(a => ({ a, r: calcular(a, t) }));
+  $("inovar-info").innerHTML = `${esc(t.nome)} · <strong>${textoVista()}</strong> · ${lista.length} alunos (por ordem de número, sem os que saíram). Os alunos sem notas ficam com a linha em branco. Confirma sempre na tabela ao lado antes de colar no Inovar.`;
+  $("inovar-texto").value = linhas.map(x => x.r.nivelFinal ?? "").join("\n");
+  $("inovar-tabela").innerHTML = `<thead><tr><th>N.º</th><th>Nome</th><th>${t.ciclo === "secundario" ? "Nota" : "Nível"}</th></tr></thead><tbody>${linhas.map(x => `<tr><td>${x.a.num}</td><td>${esc(x.a.nome)}</td><td style="text-align:center; font-weight:700;">${x.r.nivelFinal ?? "—"}${x.r.parcial ? " *" : ""}</td></tr>`).join("")}</tbody>`;
+  $("modal-inovar").classList.add("aberto");
+}
+function copiarInovar() {
+  const ta = $("inovar-texto");
+  const ok = () => toast("Níveis copiados. Cola na primeira célula da coluna no Inovar.");
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(ta.value).then(ok, () => { ta.select(); document.execCommand("copy"); ok(); });
+  else { ta.removeAttribute("readonly"); ta.select(); document.execCommand("copy"); ta.setAttribute("readonly", ""); ok(); }
+}
+
+// ===================================================================
+// SÍNTESE CT
+// ===================================================================
+function renderizarEstatisticas() {
+  const t = obterTurmaAtiva();
+  if (!t) { semTurma("ct-alunos-risco"); return; }
+  $("ct-desc").innerText = `${t.nome} · ${textoVista()} · ${t.anoLetivo}`;
+  renderizarAlertas(t);
+  renderizarPropostas(t);
+  const calcs = alunosAtivos(t).map(a => ({ a, r: calcular(a, t) }));
+  const notas = calcs.map(c => c.r.nivelFinal).filter(v => v !== null);
+  const total = notas.length;
+  if (!total) {
+    ["ct-taxa-sucesso", "ct-taxa-insucesso", "ct-media-turma", "ct-max-min"].forEach(id => $(id).innerText = "—");
+    $("ct-alunos-risco").innerHTML = "<p class='muted'>Sem dados de avaliação neste semestre.</p>"; $("ct-distribuicao-notas").innerHTML = ""; return;
+  }
+  const pos = notas.filter(n => positivo(t, n)).length, neg = total - pos;
+  $("ct-taxa-sucesso").innerText = `${Math.round(pos / total * 100)}% (${pos})`;
+  $("ct-taxa-insucesso").innerText = `${Math.round(neg / total * 100)}% (${neg})`;
+  $("ct-media-turma").innerText = (notas.reduce((a, b) => a + b, 0) / total).toFixed(1);
+  $("ct-max-min").innerText = `${Math.max(...notas)} / ${Math.min(...notas)}`;
+  const risco = calcs.filter(c => c.r.nivelFinal !== null && !positivo(t, c.r.nivelFinal));
+  const dn = nomesDom(t);
+  $("ct-alunos-risco").innerHTML = risco.length ? `<table><thead><tr><th>N.º</th><th>Aluno</th><th>Medidas</th><th>${esc(dn.raw1)}</th><th>${esc(dn.raw2)}</th><th>${esc(dn.raw3)}</th><th>Final</th></tr></thead><tbody>
+    ${risco.map(c => `<tr><td>${c.a.num}</td><td><strong>${esc(c.a.nome)}</strong></td><td>${c.a.med.nivel ? NIVEL_MED_TXT[c.a.med.nivel] + (c.a.med.rtp ? " (RTP)" : "") : "—"}</td>
+      <td>${fmtPct(t, c.r.m1Pct)}</td><td>${fmtPct(t, c.r.m2Pct)}</td><td>${fmtPct(t, c.r.m3Pct)}</td><td><span class="badge badge-neg">${fmtNivel(t, c.r.nivelFinal)}</span></td></tr>`).join("")}</tbody></table>`
+    : "<p class='ok'>Nenhum aluno com classificação negativa.</p>";
+  const niveis = t.ciclo === "secundario"
+    ? [["0–9", n => n < 10], ["10–13", n => n >= 10 && n <= 13], ["14–17", n => n >= 14 && n <= 17], ["18–20", n => n >= 18]]
+    : [1, 2, 3, 4, 5].map(k => ["Nível " + k, n => n === k]);
+  $("ct-distribuicao-notas").innerHTML = `<table style="max-width:460px;"><thead><tr><th>Classificação</th><th>Alunos</th><th>%</th></tr></thead><tbody>
+    ${niveis.map(([l, f]) => { const q = notas.filter(f).length; return `<tr><td>${l}</td><td style="text-align:center; font-weight:700;">${q}</td><td style="text-align:center;">${Math.round(q / total * 100)}%</td></tr>`; }).join("")}</tbody></table>`;
+}
+
+// --- Alertas para o conselho de turma ---
+function alertasAluno(a, t) {
+  const r = calcular(a, t), out = [];
+  if (r.nivelFinal !== null && !positivo(t, r.nivelFinal)) out.push(["al-neg", `Negativa (${fmtNivel(t, r.nivelFinal)})`]);
+  if (AppState.vista !== "S1") {
+    const n1 = calcular(a, t, "S1").nivelFinal, n2 = calcular(a, t, "S2").nivelFinal;
+    if (n1 !== null && n2 !== null) {
+      if (n1 - n2 >= 2) out.push(["al-desc", `Desceu ${n1 - n2} níveis (${n1} → ${n2})`]);
+      else if (positivo(t, n1) && !positivo(t, n2)) out.push(["al-desc", `Passou a negativa (${n1} → ${n2})`]);
+    }
+  }
+  const falta = instsVista(t).filter(i => !temNota(a.notas[i.id]) && !eDisp(a.notas[i.id]));
+  if (falta.length) out.push(["al-falta", `Por realizar: ${falta.map(i => i.id).join(", ")}`]);
+  if ((a.med.nivel === "S" || a.med.nivel === "A") && r.nivelFinal !== null && !positivo(t, r.nivelFinal)) out.push(["al-med", `Medidas ${NIVEL_MED_TXT[a.med.nivel].toLowerCase()} e negativa`]);
+  const rs = resumoRegistos(a);
+  if (rs.mat >= 3) out.push(["al-reg", `${rs.mat} faltas de material`]);
+  if (rs.tpc >= 3) out.push(["al-reg", `${rs.tpc} TPC não feitos`]);
+  return out;
+}
+function renderizarAlertas(t) {
+  const linhas = alunosAtivos(t).map(a => ({ a, al: alertasAluno(a, t) })).filter(x => x.al.length);
+  $("ct-alertas").innerHTML = linhas.length
+    ? `<table><thead><tr><th>N.º</th><th>Aluno</th><th class="wrap">Alertas</th></tr></thead><tbody>${linhas.map(x => `<tr><td>${x.a.num}</td><td><strong>${esc(x.a.nome)}</strong></td><td class="wrap">${x.al.map(([c, txt]) => `<span class="alerta ${c}">${esc(txt)}</span>`).join("")}</td></tr>`).join("")}</tbody></table>
+       <p class="muted" style="margin-top:6px;">Descidas de nível só aparecem com o 2.º semestre ou o ano selecionado. Faltas de material e TPC: alerta a partir de 3 no período.</p>`
+    : "<p class='ok'>Sem alertas.</p>";
+}
+
+// --- Proposta de nível com justificação ---
+const virgula = (n, d = 1) => n.toFixed(d).replace(".", ",");
+function propostaTexto(a, t) {
+  const r = calcular(a, t), dn = nomesDom(t);
+  if (r.nivelFinal === null) return "Sem elementos de avaliação suficientes para propor classificação.";
+  const partes = [];
+  partes.push(t.ciclo === "secundario" ? `Proposta: ${r.nivelFinal} valores (${virgula(r.totalPct)}%).` : `Proposta: nível ${r.nivelFinal} (${virgula(r.totalPct)}%).`);
+  const doms = ["d1", "d2", "d3"].filter(d => r["m" + d.slice(1) + "Pct"] !== null).map(d => `${dn["raw" + d.slice(1)].charAt(0) + dn["raw" + d.slice(1)].slice(1).toLowerCase()}: ${mencao(t, d, r["m" + d.slice(1) + "Pct"]).nivel.toLowerCase()}`);
+  if (doms.length) partes.push(doms.join("; ") + ".");
+  if (r.parcial) partes.push("Resultado parcial: há domínios ainda sem avaliação.");
+  const falta = instsVista(t).filter(i => !temNota(a.notas[i.id]) && !eDisp(a.notas[i.id]));
+  if (falta.length) partes.push(`Elementos não realizados: ${falta.map(i => i.label).join(", ")}.`);
+  const rs = resumoRegistos(a);
+  const regs = [rs.mat ? `${rs.mat} falta(s) de material` : "", rs.tpc ? `${rs.tpc} trabalho(s) de casa não feito(s)` : ""].filter(Boolean);
+  if (regs.length) partes.push(`Registos em aula: ${regs.join(" e ")}.`);
+  if (a.med.nivel) partes.push(`Beneficia de medidas ${NIVEL_MED_TXT[a.med.nivel].toLowerCase()}${a.med.rtp ? " (com RTP)" : ""}.`);
+  return partes.join(" ");
+}
+function renderizarPropostas(t) {
+  const lista = alunosAtivos(t);
+  $("ct-propostas").innerHTML = lista.length ? `<table><thead><tr><th>N.º</th><th>Aluno</th><th class="wrap">Proposta</th></tr></thead><tbody>
+    ${lista.map(a => `<tr><td>${a.num}</td><td><strong>${esc(a.nome)}</strong></td><td class="wrap" style="min-width:380px;">${esc(propostaTexto(a, t))}</td></tr>`).join("")}</tbody></table>` : '<div class="vazio">Sem alunos.</div>';
+}
+function copiarTexto(txt, msg) {
+  const ta = document.createElement("textarea"); ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  const fim = () => { ta.remove(); toast(msg); };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(fim, () => { document.execCommand("copy"); fim(); });
+  else { document.execCommand("copy"); fim(); }
+}
+function copiarPropostas() {
+  const t = obterTurmaAtiva(); if (!t) return;
+  copiarTexto(alunosAtivos(t).map(a => `${a.num}. ${a.nome} — ${propostaTexto(a, t)}`).join("\n"), "Propostas copiadas.");
+}
+
+// --- Gráfico de evolução (SVG, sem bibliotecas) ---
+function graficoEvolucao(a, t) {
+  const pts = instsVista(t).filter(i => temNota(a.notas[i.id])).map(i => ({ lab: i.id, nome: i.label, v: Number(a.notas[i.id]) }));
+  const ra = valorRA(a); if (ra !== null) pts.push({ lab: "RA", nome: "Registo em aula", v: ra });
+  if (pts.length < 2) return "";
+  const W = 700, H = 180, L = 36, R = 14, T = 16, B = 30;
+  const x = k => L + (pts.length === 1 ? 0 : k * (W - L - R) / (pts.length - 1));
+  const y = v => T + (100 - v) * (H - T - B) / 100;
+  const c3 = AppState.cortes[1];
+  const linha = pts.map((p, k) => `${x(k).toFixed(1)},${y(p.v).toFixed(1)}`).join(" ");
+  return `<div class="ficha-secao"><h4>Evolução nos elementos de avaliação</h4>
+    <svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px; font-family:inherit;" role="img" aria-label="Evolução das classificações">
+      ${[0, 50, 100].map(v => `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#e2e8f0"/><text x="${L - 6}" y="${y(v) + 4}" font-size="10" fill="#64748b" text-anchor="end">${v}%</text>`).join("")}
+      ${t.ciclo === "basico" ? `<line x1="${L}" x2="${W - R}" y1="${y(c3)}" y2="${y(c3)}" stroke="#dc2626" stroke-dasharray="4 4" opacity=".6"/><text x="${W - R}" y="${y(c3) - 4}" font-size="9.5" fill="#dc2626" text-anchor="end">nível 3 (${c3}%)</text>` : ""}
+      <polyline points="${linha}" fill="none" stroke="#1F5C54" stroke-width="2.2"/>
+      ${pts.map((p, k) => `<circle cx="${x(k)}" cy="${y(p.v)}" r="4" fill="${p.lab === "RA" ? "#C68A2E" : "#1F5C54"}"><title>${esc(p.nome)}: ${virgula(p.v)}%</title></circle>
+        <text x="${x(k)}" y="${y(p.v) - 8}" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">${Math.round(p.v)}</text>
+        <text x="${x(k)}" y="${H - 10}" font-size="10" fill="#475569" text-anchor="middle">${esc(p.lab)}</text>`).join("")}
+    </svg></div>`;
+}
+
+// ===================================================================
+// FICHA EE (sem créditos)
+// ===================================================================
+function renderizarFicha() {
+  const t = obterTurmaAtiva();
+  if (!t || !t.alunos.length) { $("sel-aluno-ficha").innerHTML = ""; semTurma("conteudo-ficha"); return; }
+  const sel = $("sel-aluno-ficha");
+  const anterior = sel.value;
+  sel.innerHTML = alunosAtivos(t).map(a => `<option value="${a.num}">${a.num} — ${esc(a.nome)}</option>`).join("");
+  if (anterior && [...sel.options].some(o => o.value === anterior)) sel.value = anterior;
+  const a = t.alunos.find(x => String(x.num) === sel.value) || alunosAtivos(t)[0];
+  if (!a) { semTurma("conteudo-ficha"); return; }
+  const cfg = CONFIG_CICLOS[t.ciclo], dn = nomesDom(t), r = calcular(a, t);
+  const bloco = (d, cor) => { const m = mencao(t, d, r["m" + d.slice(1) + "Pct"]); return `
+    <div style="border-left:3px solid ${cor}; padding:8px 12px; background:#f8fafc; font-size:12px;">
+      <div style="display:flex; justify-content:space-between; font-weight:700;"><span>${esc(dn[d])}</span><span>${fmtPct(t, r["m" + d.slice(1) + "Pct"])} [${m.nivel}]</span></div>
+      <p style="color:#475569; margin:4px 0 0;">${esc(m.txt)}</p></div>`; };
+  const insts = instsVista(t);
+  $("conteudo-ficha").innerHTML = `
+    <div class="ficha-aluno-print">
+      <div class="ficha-header">
+        <div><h2 style="font-size:16px; color:var(--primary-dark);">${esc(AppState.escola.toUpperCase())}</h2>
+          <div style="font-size:12px; color:#475569; margin-top:2px;">${esc(cfg.nome)} · Ano letivo ${esc(t.anoLetivo)}</div></div>
+        <div style="text-align:right;"><strong style="font-size:14px;">Turma ${esc(t.nome)}</strong><div style="font-size:11px; color:#64748b;">Ficha de informação — ${textoVista()}</div></div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:10px 14px; border-radius:6px; margin-bottom:18px;">
+        <div><span style="font-size:11px; text-transform:uppercase; color:#64748b;">Aluno(a)</span><div style="font-size:15px; font-weight:700;">N.º ${a.num} — ${esc(a.nome)}</div></div>
+        <div style="text-align:right;"><span style="font-size:11px; text-transform:uppercase; color:#64748b;">Classificação</span><div style="font-size:18px; font-weight:800; color:var(--primary);">${fmtNivel(t, r.nivelFinal)}</div></div>
+      </div>
+      <div class="ficha-secao"><h4>1. Avaliação por domínio</h4><div style="display:grid; gap:10px;">${bloco("d1", "#3b82f6")}${bloco("d2", "#10b981")}${bloco("d3", "#f59e0b")}</div></div>
+      <div class="ficha-secao"><h4>2. Elementos de avaliação</h4>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; font-size:11.5px;">${insts.length ? insts.map(i => {
+          const v = a.notas[i.id];
+          const txt = eDisp(v) ? "Dispensado" : temNota(v) ? (t.ciclo === "secundario" ? ((v / 100) * 20).toFixed(1) + " val" : Number(v).toFixed(1) + "%") : "Não realizado";
+          return `<span style="background:#f1f5f9; border:1px solid #e2e8f0; padding:4px 8px; border-radius:4px;"><strong>${esc(i.label)}:</strong> ${txt}</span>`;
+        }).join("") : '<span class="muted">Sem elementos neste período.</span>'}
+        ${valorRA(a) !== null ? `<span style="background:#fffbeb; border:1px solid #fde68a; padding:4px 8px; border-radius:4px;"><strong>Registo em aula:</strong> ${t.ciclo === "secundario" ? ((valorRA(a) / 100) * 20).toFixed(1) + " val" : valorRA(a).toFixed(1) + "%"}</span>` : ""}</div>
+        ${(() => { const rs = resumoRegistos(a); return (rs.mat || rs.tpc) ? `<p style="font-size:11.5px; color:#475569; margin-top:8px;">Faltas de material: <strong>${rs.mat}</strong> · Trabalhos de casa não realizados: <strong>${rs.tpc}</strong></p>` : ""; })()}</div>
+      ${graficoEvolucao(a, t)}
+      <div class="ficha-secao" style="margin-top:20px;"><h4>3. Reflexão / autoavaliação do aluno</h4><div style="height:60px; border:1px dashed #cbd5e1; border-radius:4px;"></div></div>
+      <div class="caixa-assinatura"><div class="linha-assinatura">O(A) Professor(a)</div><div class="linha-assinatura">O(A) Encarregado(a) de Educação</div></div>
+    </div>`;
+}
+
+// ===================================================================
+// REPORTE INTERCALAR
+// ===================================================================
+function renderizarReporte() {
+  const t = obterTurmaAtiva(); const cont = $("lista-reportes");
+  if (!t) { semTurma("lista-reportes"); return; }
+  $("reporte-desc").innerText = `${t.nome} · ${textoVista()} · descritores de desempenho por domínio.`;
+  const dn = nomesDom(t);
+  cont.innerHTML = alunosAtivos(t).map(a => {
+    const r = calcular(a, t);
+    return `<div class="reporte-card"><h4><span>${a.num}. ${esc(a.nome)}</span><span style="color:var(--primary);">${fmtNivel(t, r.nivelFinal)}</span></h4>
+      ${["d1", "d2", "d3"].map(d => { const m = mencao(t, d, r["m" + d.slice(1) + "Pct"]); return `<div class="reporte-item"><div class="d-title">${esc(dn[d])} (${fmtPct(t, r["m" + d.slice(1) + "Pct"])})</div><div class="d-text"><strong>[${m.nivel}]</strong> ${esc(m.txt)}</div></div>`; }).join("")}
+    </div>`;
+  }).join("") || '<div class="vazio">Sem alunos.</div>';
+}
+
+// ===================================================================
+// MEDIDAS DL 54/2018
+// ===================================================================
+let medAlunoIdx = null;
+function abrirMedidas(idx) {
+  const t = obterTurmaAtiva(); if (!t) return;
+  if (bloqueado()) return;
+  medAlunoIdx = idx;
+  const a = t.alunos[idx], m = a.med;
+  $("med-titulo").innerText = `Medidas — ${a.num}. ${a.nome}`;
+  $("med-nivel").value = m.nivel; $("med-rtp").checked = !!m.rtp; $("med-pei").checked = !!m.pei; $("med-obs").value = m.obs || "";
+  const grupo = (k) => {
+    const g = MEDIDAS_LEI[k];
+    return `<div class="med-grupo"><h5>${g.titulo}</h5><div class="chk-list">${g.itens.map(i => {
+      const marcado = (k === "AV" ? m.aval : m.lista).includes(i.id);
+      const subs = k === "U" ? (AppState.submedidas[i.id] || []) : [];
+      let catAtual = null;
+      const htmlSubs = subs.map(s => {
+        const { cat, item } = partesSub(s), chave = i.id + "::" + s;
+        const marcadoSub = m.sub.includes(chave) || m.sub.includes(s);
+        const cab = cat && cat !== catAtual ? `<div style="width:100%; font-size:11.5px; font-weight:700; color:#64748b; margin-top:6px;">${esc(cat)}</div>` : "";
+        catAtual = cat;
+        return cab + `<label style="width:100%;"><input type="checkbox" data-sub="1" value="${esc(chave)}" ${marcadoSub ? "checked" : ""} onchange="marcarPaiSub(this,'${i.id}')"> ${esc(item)}</label>`;
+      }).join("");
+      return `<label style="font-weight:700;"><input type="checkbox" data-med="${k}" value="${i.id}" ${marcado ? "checked" : ""}> ${esc(i.nome)}</label>
+        ${subs.length ? `<details ${m.sub.some(x => x.startsWith(i.id + "::")) ? "open" : ""} style="margin:2px 0 8px 24px;"><summary style="cursor:pointer; font-size:12px; color:var(--primary);">Submedidas (${subs.length}) — tocar para abrir</summary><div class="sub-list" style="margin-left:0; flex-direction:column;">${htmlSubs}</div></details>` : ""}`;
+    }).join("")}</div></div>`;
+  };
+  $("med-grupos").innerHTML = grupo("U") + grupo("S") + grupo("A") + grupo("AV") +
+    (Object.values(AppState.submedidas).every(l => !l.length) ? `<p class="muted">Para escolher submedidas universais (as do Inovar), escreve-as primeiro em «Medidas DL 54/2018 → Lista de submedidas».</p>` : "");
+  $("modal-medidas").classList.add("aberto");
+}
+function guardarMedidasAluno() {
+  const t = obterTurmaAtiva(); if (!t || medAlunoIdx === null) return;
+  const a = t.alunos[medAlunoIdx];
+  const lista = [...document.querySelectorAll('#med-grupos input[data-med]:checked')];
+  a.med = {
+    nivel: $("med-nivel").value,
+    rtp: $("med-rtp").checked,
+    pei: $("med-pei").checked,
+    lista: lista.filter(i => i.dataset.med !== "AV").map(i => i.value),
+    aval: lista.filter(i => i.dataset.med === "AV").map(i => i.value),
+    sub: [...document.querySelectorAll('#med-grupos input[data-sub]:checked')].map(i => i.value),
+    obs: $("med-obs").value.trim()
+  };
+  if ((a.med.nivel === "S" || a.med.nivel === "A") && !a.med.rtp && !confirm("As medidas seletivas e adicionais exigem RTP (art. 21.º do DL 54/2018). Gravar mesmo sem o visto «Tem RTP»?")) return;
+  guardarEstado(true); fecharModal("modal-medidas");
+  navegar(vistaAtual);
+}
+function renderizarMedidas() {
+  const t = obterTurmaAtiva();
+  renderizarEditorCatalogo();
+  if (!t) { semTurma("quadro-medidas"); return; }
+  $("medidas-titulo").innerText = `Medidas da turma ${t.nome} (${t.anoLetivo})`;
+  const com = t.alunos.map((a, i) => ({ a, i })).filter(x => x.a.estado !== "saiu");
+  $("quadro-medidas").innerHTML = com.length ? `<table><thead><tr><th>N.º</th><th>Nome</th><th>Nível</th><th>RTP</th><th>PEI</th><th class="wrap">Medidas</th><th class="wrap">Adaptações na avaliação</th><th class="wrap">Observações</th><th class="no-print"></th></tr></thead><tbody>
+    ${com.map(({ a, i }) => { const m = a.med; return `<tr>
+      <td>${a.num}</td><td>${esc(a.nome)}</td><td>${m.nivel ? NIVEL_MED_TXT[m.nivel] : "—"}</td><td style="text-align:center;">${m.rtp ? "✔" : ""}</td><td style="text-align:center;">${m.pei ? "✔" : ""}</td>
+      <td class="wrap" style="min-width:200px;">${[...m.lista.map(id => NOME_MEDIDA[id]), ...m.sub.map(textoSub)].map(esc).join("; ") || "—"}</td>
+      <td class="wrap" style="min-width:160px;">${m.aval.map(id => esc(NOME_MEDIDA[id])).join("; ") || "—"}</td>
+      <td class="wrap" style="min-width:140px;">${esc(m.obs || "")}</td>
+      <td class="no-print"><button class="btn btn-sm" onclick="abrirMedidas(${i})">Editar</button></td></tr>`; }).join("")}</tbody></table>
+    <p class="muted" style="margin-top:8px;">Total: ${com.filter(x => x.a.med.nivel === "U").length} com universais · ${com.filter(x => x.a.med.nivel === "S").length} com seletivas · ${com.filter(x => x.a.med.nivel === "A").length} com adicionais · ${com.filter(x => x.a.med.aval.length).length} com adaptações na avaliação.</p>`
+    : '<div class="vazio">Sem alunos.</div>';
+}
+function renderizarEditorCatalogo() {
+  $("editor-catalogo").innerHTML = MEDIDAS_LEI.U.itens.map(i => `
+    <label class="field" style="margin-bottom:10px;">${esc(i.nome)}
+      <textarea id="cat-${i.id}" rows="${Math.min(14, Math.max(4, (AppState.submedidas[i.id] || []).length + 1))}" placeholder="Uma por linha. Com categoria: Categoria | Submedida">${esc((AppState.submedidas[i.id] || []).join("\n"))}</textarea></label>`).join("");
+}
+function guardarCatalogo() {
+  MEDIDAS_LEI.U.itens.forEach(i => {
+    AppState.submedidas[i.id] = [...new Set($("cat-" + i.id).value.split(/\r?\n/).map(s => s.trim()).filter(Boolean))];
+  });
+  guardarEstado(true);
+}
+
+// ===================================================================
+// ELEMENTOS DE AVALIAÇÃO
+// ===================================================================
+function renderizarInstrumentos() {
+  const t = obterTurmaAtiva();
+  const lista = turmasDoAno();
+  $("novo-inst-dom").innerHTML = t ? opcoesDominio(t) : "";
+  $("novo-inst-sem").value = AppState.vista === "S2" ? "2" : "1";
+  $("chk-turmas-inst").innerHTML = lista.map(x => `<label><input type="checkbox" class="chk-turma-inst" value="${x.id}" ${t && x.id === t.id ? "checked" : ""}> ${esc(x.nome)}</label>`).join("") || '<span class="muted">Sem turmas.</span>';
+  const anos = [...new Set(lista.map(x => (x.nome.match(/^\s*(\d+)/) || [])[1]).filter(Boolean))];
+  $("atalhos-turmas").innerHTML = anos.map(n => `<button class="btn btn-sm" onclick="marcarTurmasAno('${n}')">todas do ${n}.º</button>`).join(" ") + ` <button class="btn btn-sm" onclick="marcarTurmasAno('')">nenhuma</button>`;
+  if (!t) { semTurma("lista-instrumentos"); return; }
+  $("inst-titulo").innerText = `Elementos da turma ${t.nome}`;
+  const dn = nomesDom(t);
+  $("lista-instrumentos").innerHTML = [1, 2].map(s => `
+    <h4>${s}.º semestre</h4>
+    ${["d1", "d2", "d3"].map(d => {
+      const insts = t.instrumentos.filter(i => i.sem === s && i.dom === d);
+      return `<div style="margin-bottom:8px;"><div class="muted" style="font-weight:700;">${esc(dn[d])}</div><div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:4px;">
+        ${insts.map(i => `<span style="background:#f1f5f9; border:1px solid var(--border); padding:4px 10px; border-radius:4px; font-size:12px; display:inline-flex; align-items:center; gap:6px;">
+          ${i.drive ? '<span title="Vem da Drive">☁</span>' : ""} <strong>${esc(i.id)}</strong> — ${esc(i.label)}
+          <button class="btn btn-sm" title="Renomear" onclick="renomearInstrumento('${esc(i.id)}')">✎</button>
+          <button class="btn btn-sm btn-danger" title="Remover desta turma" onclick="removerInstrumento('${esc(i.id)}', false)">✕</button>
+          <button class="btn btn-sm btn-danger" title="Remover de todas as turmas do ano" onclick="removerInstrumento('${esc(i.id)}', true)">✕ todas</button></span>`).join("") || '<span class="muted">—</span>'}
+      </div></div>`;
+    }).join("")}`).join("");
+}
+function marcarTurmasAno(n) {
+  document.querySelectorAll(".chk-turma-inst").forEach(c => {
+    const t = AppState.turmas.find(x => x.id === c.value);
+    c.checked = !!n && (t.nome.match(/^\s*(\d+)/) || [])[1] === n;
+  });
+}
+function adicionarInstrumento() {
+  if (bloqueado()) return;
+  const id = $("novo-inst-id").value.trim().toUpperCase(), label = $("novo-inst-label").value.trim();
+  const dom = $("novo-inst-dom").value, sem = Number($("novo-inst-sem").value);
+  const alvo = [...document.querySelectorAll(".chk-turma-inst:checked")].map(c => AppState.turmas.find(t => t.id === c.value));
+  if (!id || !label) return alert("Indica o código e a designação.");
+  if (!/^[A-Z0-9_\-]+$/.test(id)) return alert("O código só pode ter letras, números, - ou _ (sem espaços).");
+  if (!alvo.length) return alert("Escolhe pelo menos uma turma.");
+  const repetidas = alvo.filter(t => t.instrumentos.some(i => i.id === id));
+  alvo.filter(t => !repetidas.includes(t)).forEach(t => t.instrumentos.push({ id, label, dom, sem }));
+  guardarEstado(true);
+  $("novo-inst-id").value = ""; $("novo-inst-label").value = "";
+  renderizarInstrumentos();
+  const criadas = alvo.length - repetidas.length;
+  alert(`Elemento ${id} criado em ${criadas} turma(s).` + (repetidas.length ? `\nJá existia em: ${repetidas.map(t => t.nome).join(", ")} (não foi alterado).` : ""));
+}
+function renomearInstrumento(id) {
+  if (bloqueado()) return;
+  const t = obterTurmaAtiva(); const i = t.instrumentos.find(x => x.id === id);
+  const novo = prompt("Nova designação:", i.label);
+  if (!novo || !novo.trim()) return;
+  turmasDoAno().forEach(x => x.instrumentos.filter(y => y.id === id).forEach(y => y.label = novo.trim()));
+  guardarEstado(true); renderizarInstrumentos();
+}
+function removerInstrumento(id, todas) {
+  if (bloqueado()) return;
+  const t = obterTurmaAtiva();
+  const alvo = todas ? turmasDoAno().filter(x => x.instrumentos.some(i => i.id === id)) : [t];
+  const comNotas = alvo.reduce((s, x) => s + x.alunos.filter(a => a.notas[id] !== undefined).length, 0);
+  if (!confirm(`Remover o elemento ${id} de ${alvo.map(x => x.nome).join(", ")}?` + (comNotas ? `\n\nATENÇÃO: ${comNotas} nota(s) lançadas serão apagadas.` : ""))) return;
+  alvo.forEach(x => { x.instrumentos = x.instrumentos.filter(i => i.id !== id); x.alunos.forEach(a => delete a.notas[id]); });
+  guardarEstado(true); renderizarInstrumentos();
+}
+
+// ===================================================================
+// TURMAS E ALUNOS
+// ===================================================================
+function criarTurma() {
+  if (bloqueado()) return;
+  const nome = $("novo-turma-nome").value.trim(); if (!nome) return alert("Indica o nome da turma.");
+  if (turmasDoAno().some(t => norm(t.nome) === norm(nome))) return alert("Já existe uma turma com esse nome neste ano.");
+  const t = novaTurma(nome, $("novo-turma-ciclo").value, AppState.anoAtivo);
+  AppState.turmas.push(t); AppState.turmaAtivaId = t.id;
+  AppState.escala = CONFIG_CICLOS[t.ciclo].escalaPadrao;
+  $("novo-turma-nome").value = "";
+  guardarEstado(true); atualizarTudo();
+}
+function renomearTurma() {
+  if (bloqueado()) return;
+  const t = obterTurmaAtiva(); if (!t) return;
+  const n = $("renomear-turma").value.trim(); if (!n) return alert("Escreve o novo nome.");
+  t.nome = n; $("renomear-turma").value = ""; guardarEstado(true); atualizarTudo();
+}
+function eliminarTurmaAtual() {
+  if (bloqueado()) return;
+  const t = obterTurmaAtiva(); if (!t) return;
+  if (!confirm(`Eliminar a turma ${t.nome} com ${t.alunos.length} alunos e todas as notas?`)) return;
+  if (!confirm("Tens a certeza? Esta operação não se pode desfazer (a não ser com um backup).")) return;
+  AppState.turmas = AppState.turmas.filter(x => x.id !== t.id);
+  garantirTurmaAtiva(); guardarEstado(true); atualizarTudo();
+}
+function renderizarTurmas() {
+  const t = obterTurmaAtiva();
+  $("txt-turma-ativa").innerText = t ? `${t.nome} (${t.anoLetivo})` : "";
+  if (!t) { $("lista-alunos-turma").innerHTML = `<tr><td colspan="5" class="vazio">Sem turma selecionada.</td></tr>`; return; }
+  const arq = anoArquivado() ? "disabled" : "";
+  $("lista-alunos-turma").innerHTML = t.alunos.map((a, i) => `
+    <tr class="${a.estado === "saiu" ? "saiu" : ""}">
+      <td><input type="number" class="inp" style="width:60px; padding:3px 6px;" value="${a.num}" ${arq} onchange="editarAluno(${i}, 'num', this.value)"></td>
+      <td><input type="text" class="inp" style="width:100%; min-width:260px; padding:3px 6px;" value="${esc(a.nome)}" ${arq} onchange="editarAluno(${i}, 'nome', this.value)"></td>
+      <td>${a.med.nivel ? NIVEL_MED_TXT[a.med.nivel] + (a.med.rtp ? " · RTP" : "") : "—"} <button class="btn btn-sm" onclick="abrirMedidas(${i})">Editar</button></td>
+      <td><select class="inp" style="padding:3px 6px;" ${arq} onchange="editarAluno(${i}, 'estado', this.value)">
+        <option value="ativo" ${a.estado !== "saiu" ? "selected" : ""}>Na turma</option><option value="saiu" ${a.estado === "saiu" ? "selected" : ""}>Saiu / transferido</option></select></td>
+      <td style="text-align:center;"><button class="btn btn-sm btn-danger" ${arq} onclick="eliminarAluno(${i})">✕</button></td>
+    </tr>`).join("") || `<tr><td colspan="5" class="vazio">Ainda sem alunos.</td></tr>`;
+}
+function editarAluno(i, campo, valor) {
+  if (bloqueado()) return;
+  const t = obterTurmaAtiva(), a = t.alunos[i];
+  if (campo === "num") {
+    const n = parseInt(valor);
+    if (isNaN(n)) return renderizarTurmas();
+    if (t.alunos.some(x => x !== a && x.num === n)) { alert(`O número ${n} já está atribuído.`); return renderizarTurmas(); }
+    a.num = n; ordenarAlunos(t);
+  } else if (campo === "nome") { if (!valor.trim()) return renderizarTurmas(); a.nome = valor.trim(); }
+  else a.estado = valor;
+  guardarEstado(true); renderizarTurmas();
+}
+function adicionarAlunoIndividual() {
+  if (bloqueado()) return;
+  const t = obterTurmaAtiva(); if (!t) return alert("Seleciona uma turma.");
+  const nome = $("novo-aluno-nome").value.trim(); if (!nome) return alert("Indica o nome.");
+  let num = parseInt($("novo-aluno-num").value);
+  if (isNaN(num)) num = t.alunos.length ? Math.max(...t.alunos.map(a => a.num)) + 1 : 1;
+  if (t.alunos.some(a => a.num === num)) return alert(`O número ${num} já existe nesta turma.`);
+  if (t.alunos.some(a => norm(a.nome) === norm(nome)) && !confirm("Já existe um aluno com este nome. Acrescentar mesmo assim?")) return;
+  t.alunos.push(novoAluno(num, nome)); ordenarAlunos(t);
+  $("novo-aluno-nome").value = ""; $("novo-aluno-num").value = "";
+  guardarEstado(true); renderizarTurmas();
+}
+function eliminarAluno(i) {
+  if (bloqueado()) return;
+  const t = obterTurmaAtiva(), a = t.alunos[i];
+  if (!confirm(`Apagar ${a.nome} e todas as suas notas?\n\nSe o aluno foi transferido, é preferível marcá-lo como «Saiu / transferido» (mantém o histórico).`)) return;
+  t.alunos.splice(i, 1); guardarEstado(true); renderizarTurmas();
+}
+
+let analiseLista = null;
+function interpretarLinhaAluno(linha) {
+  const cols = linha.split(/\t|;/).map(c => c.trim()).filter(Boolean);
+  if (cols.length >= 2) {
+    const iNum = cols.findIndex(c => /^\d{1,3}$/.test(c));
+    const nome = cols.filter(c => !/^\d+$/.test(c) && /[a-zà-ÿ]/i.test(c)).sort((a, b) => b.length - a.length)[0];
+    return { num: iNum >= 0 ? parseInt(cols[iNum]) : null, nome: nome || "" };
+  }
+  const m = linha.trim().match(/^(\d{1,3})[\s.\-–)]+(.+)$/);
+  if (m) return { num: parseInt(m[1]), nome: m[2].trim() };
+  return { num: null, nome: linha.trim() };
+}
+function analisarListaAlunos() {
+  const t = obterTurmaAtiva(); if (!t) return alert("Seleciona uma turma."); if (bloqueado()) return;
+  const linhas = $("lote-alunos").value.split(/\r?\n/).filter(l => l.trim());
+  if (!linhas.length) return alert("Cola a lista de alunos.");
+  let prox = t.alunos.length ? Math.max(...t.alunos.map(a => a.num)) + 1 : 1;
+  const lidos = [];
+  linhas.forEach(l => {
+    const x = interpretarLinhaAluno(l);
+    if (!x.nome || /^(nome|aluno|n\.?º?|numero|número)$/i.test(norm(x.nome))) return;
+    if (lidos.some(y => norm(y.nome) === norm(x.nome))) return; // repetido na própria lista
+    lidos.push(x);
+  });
+  lidos.forEach(x => { if (x.num === null) x.num = prox++; });
+  const novos = [], alterados = [], iguais = [], usados = new Set();
+  lidos.forEach(x => {
+    let a = t.alunos.find(y => norm(y.nome) === norm(x.nome));
+    if (a) { usados.add(a); if (a.num !== x.num) alterados.push({ a, tipo: "num", de: a.num, para: x.num }); else iguais.push(a); if (a.estado === "saiu") alterados.push({ a, tipo: "regressa" }); return; }
+    a = t.alunos.find(y => y.num === x.num && !usados.has(y));
+    if (a && !lidos.some(z => norm(z.nome) === norm(a.nome))) { usados.add(a); alterados.push({ a, tipo: "nome", de: a.nome, para: x.nome }); return; }
+    novos.push(x);
+  });
+  const ausentes = t.alunos.filter(a => !usados.has(a) && a.estado !== "saiu");
+  analiseLista = { lidos, novos, alterados, ausentes };
+  $("preview-alunos").innerHTML = `
+    <div class="hint">
+      <strong>${lidos.length}</strong> alunos na lista colada ·
+      <span class="ok">${novos.length} novos</span> ·
+      ${alterados.length} alteração(ões) ·
+      ${iguais.length} sem alterações ·
+      <span class="${ausentes.length ? "err" : ""}">${ausentes.length} na app mas não na lista</span>
+    </div>
+    ${novos.length ? `<p style="font-size:12px;"><strong>Novos:</strong> ${novos.map(x => `${x.num}. ${esc(x.nome)}`).join("; ")}</p>` : ""}
+    ${alterados.length ? `<p style="font-size:12px;"><strong>Alterações:</strong> ${alterados.map(x => x.tipo === "num" ? `${esc(x.a.nome)}: n.º ${x.de} → ${x.para}` : x.tipo === "nome" ? `n.º ${x.a.num}: «${esc(x.de)}» → «${esc(x.para)}»` : `${esc(x.a.nome)} volta à turma`).join("; ")}</p>` : ""}
+    ${ausentes.length ? `<p style="font-size:12px;"><label><input type="checkbox" id="marcar-ausentes"> Marcar como <strong>«Saiu / transferido»</strong>: ${ausentes.map(a => `${a.num}. ${esc(a.nome)}`).join("; ")}</label></p>` : ""}
+    <div class="btn-bar"><button class="btn btn-primary" onclick="aplicarListaAlunos()">Aplicar</button><button class="btn" onclick="$('preview-alunos').innerHTML=''">Cancelar</button></div>`;
+}
+function aplicarListaAlunos() {
+  const t = obterTurmaAtiva(); if (!t || !analiseLista || bloqueado()) return;
+  const { novos, alterados, ausentes } = analiseLista;
+  alterados.forEach(x => { if (x.tipo === "nome") x.a.nome = x.para; if (x.tipo === "regressa") x.a.estado = "ativo"; });
+  // mudança de números em dois passos para evitar colisões
+  alterados.filter(x => x.tipo === "num").forEach(x => x.a.num = -x.para);
+  alterados.filter(x => x.tipo === "num").forEach(x => x.a.num = x.para);
+  if ($("marcar-ausentes") && $("marcar-ausentes").checked) ausentes.forEach(a => a.estado = "saiu");
+  novos.forEach(x => {
+    let num = x.num;
+    if (t.alunos.some(a => a.num === num)) num = Math.max(...t.alunos.map(a => a.num)) + 1;
+    t.alunos.push(novoAluno(num, x.nome));
+  });
+  ordenarAlunos(t);
+  const nums = t.alunos.map(a => a.num); const dup = nums.filter((n, i) => nums.indexOf(n) !== i);
+  guardarEstado(true);
+  $("lote-alunos").value = ""; $("preview-alunos").innerHTML = ""; analiseLista = null;
+  renderizarTurmas();
+  if (dup.length) alert(`Atenção: há números repetidos (${[...new Set(dup)].join(", ")}). Corrige-os na tabela.`);
+}
+
+// ===================================================================
+// CRITÉRIOS
+// ===================================================================
+function renderizarCriterios() {
+  const t = obterTurmaAtiva();
+  $("corte-2").value = AppState.cortes[0]; $("corte-3").value = AppState.cortes[1]; $("corte-4").value = AppState.cortes[2]; $("corte-5").value = AppState.cortes[3];
+  $("cfg-escola").value = AppState.escola;
+  $("cfg-registo-conta").checked = AppState.registoConta;
+  renderizarRegrasCalculo();
+  if (!t) return;
+  const p = ponderacoes(t), dn = nomesDom(t);
+  $("txt-turma-criterios").innerText = `${t.nome} (${t.anoLetivo})`;
+  ["1", "2", "3"].forEach(k => { $("cfg-d" + k + "-nome").value = dn["raw" + k]; $("cfg-d" + k + "-peso").value = Math.round(p["d" + k] * 100); });
+  atualizarSoma();
+}
+function lerPonderacoes() { return ["1", "2", "3"].map(k => Number($("cfg-d" + k + "-peso").value) || 0); }
+function atualizarSoma() {
+  const s = lerPonderacoes().reduce((a, b) => a + b, 0), b = $("badge-soma");
+  b.className = "soma-badge " + (s === 100 ? "soma-ok" : "soma-erro");
+  b.innerText = s === 100 ? "Soma: 100% (válido)" : `Soma: ${s}% (deve ser 100%)`;
+}
+function lerConfigCriterios() {
+  const [p1, p2, p3] = lerPonderacoes();
+  if (p1 + p2 + p3 !== 100) { alert("A soma das ponderações tem de ser 100%."); return null; }
+  return { pond: { d1: p1 / 100, d2: p2 / 100, d3: p3 / 100 }, nomes: { d1: $("cfg-d1-nome").value.trim() || "Domínio 1", d2: $("cfg-d2-nome").value.trim() || "Domínio 2", d3: $("cfg-d3-nome").value.trim() || "Domínio 3" } };
+}
+function guardarPonderacoes() {
+  if (bloqueado()) return; const t = obterTurmaAtiva(); if (!t) return;
+  const c = lerConfigCriterios(); if (!c) return;
+  t.ponderacoes = c.pond; t.dominiosNomes = c.nomes; guardarEstado(true);
+}
+function aplicarPonderacoesTodas() {
+  if (bloqueado()) return; const t = obterTurmaAtiva(); if (!t) return;
+  const c = lerConfigCriterios(); if (!c) return;
+  const alvo = turmasDoAno().filter(x => x.ciclo === t.ciclo);
+  if (!confirm(`Aplicar estas ponderações a ${alvo.map(x => x.nome).join(", ")}?`)) return;
+  alvo.forEach(x => { x.ponderacoes = clone(c.pond); x.dominiosNomes = clone(c.nomes); });
+  guardarEstado(true);
+}
+function reporPonderacoesPadrao() {
+  if (bloqueado()) return; const t = obterTurmaAtiva(); if (!t) return;
+  t.ponderacoes = clone(CONFIG_CICLOS[t.ciclo].ponderacoes); t.dominiosNomes = clone(CONFIG_CICLOS[t.ciclo].dominios);
+  guardarEstado(true); renderizarCriterios();
+}
+function guardarCortes() {
+  const c = [2, 3, 4, 5].map(k => Number($("corte-" + k).value));
+  if (c.some(isNaN) || !(0 < c[0] && c[0] < c[1] && c[1] < c[2] && c[2] < c[3] && c[3] <= 100)) return alert("Os limites têm de ser crescentes, entre 0 e 100.");
+  AppState.cortes = c; guardarEstado(true);
+}
+function guardarEscola() { AppState.escola = $("cfg-escola").value.trim() || "Agrupamento de Escolas Monte da Lua"; guardarEstado(true); }
+
+// ===================================================================
+// ANOS LETIVOS
+// ===================================================================
+function renderizarAnos() {
+  $("lista-anos").innerHTML = AppState.anos.map(ano => {
+    const arq = AppState.anosArquivados.includes(ano), n = AppState.turmas.filter(t => t.anoLetivo === ano).length;
+    return `<li style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; border:1px solid var(--border-light); padding:10px 14px; border-radius:6px; font-size:13px;">
+      <div><strong>${esc(ano)}</strong> <span class="muted">(${n} turmas)</span> ${ano === AppState.anoAtivo ? '<span style="color:var(--primary); font-weight:700; font-size:11px;">· ativo</span>' : ""}
+        ${arq ? '<span class="badge" style="background:#FEF3C7; color:#92400E;">🔒 Arquivado</span>' : '<span class="badge badge-pos">Em curso</span>'}</div>
+      <div class="btn-bar">
+        <button class="btn btn-sm" onclick="alternarArquivoAno('${esc(ano)}', ${!arq})">${arq ? "Desbloquear" : "🔒 Arquivar"}</button>
+        ${AppState.anos.length > 1 ? `<button class="btn btn-sm btn-danger" onclick="eliminarAnoLetivo('${esc(ano)}')">Eliminar</button>` : ""}
+      </div></li>`;
+  }).join("");
+}
+function alternarArquivoAno(ano, arquivar) {
+  if (arquivar) { if (!confirm(`Arquivar ${ano}? As turmas e notas ficam só de leitura.`)) return; if (!AppState.anosArquivados.includes(ano)) AppState.anosArquivados.push(ano); }
+  else AppState.anosArquivados = AppState.anosArquivados.filter(a => a !== ano);
+  guardarEstado(true); atualizarTudo();
+}
+function criarAnoLetivo() {
+  const ano = $("novo-ano-nome").value.trim();
+  if (!/^\d{4}\/\d{4}$/.test(ano)) return alert("Escreve o ano no formato 2027/2028.");
+  if (AppState.anos.includes(ano)) return alert("Esse ano já existe.");
+  const modo = $("novo-ano-copiar").value, origem = turmasDoAno();
+  AppState.anos.push(ano); AppState.anos.sort();
+  if (modo !== "nada") origem.forEach(t => {
+    const n = novaTurma(t.nome, t.ciclo, ano);
+    n.ponderacoes = clone(t.ponderacoes); n.dominiosNomes = clone(t.dominiosNomes);
+    if (modo === "alunos") n.alunos = alunosAtivos(t).map(a => { const x = novoAluno(a.num, a.nome); x.med = clone(a.med); return x; });
+    AppState.turmas.push(n);
+  });
+  AppState.anoAtivo = ano; garantirTurmaAtiva();
+  $("novo-ano-nome").value = "";
+  guardarEstado(true); atualizarTudo();
+}
+function eliminarAnoLetivo(ano) {
+  const n = AppState.turmas.filter(t => t.anoLetivo === ano).length;
+  if (!confirm(`Eliminar o ano ${ano} e as suas ${n} turma(s), com todos os alunos e notas?`)) return;
+  if (!confirm("Tens a certeza? Só um backup permite recuperar.")) return;
+  AppState.anos = AppState.anos.filter(a => a !== ano);
+  AppState.anosArquivados = AppState.anosArquivados.filter(a => a !== ano);
+  AppState.turmas = AppState.turmas.filter(t => t.anoLetivo !== ano);
+  if (AppState.anoAtivo === ano) AppState.anoAtivo = AppState.anos[AppState.anos.length - 1];
+  garantirTurmaAtiva(); guardarEstado(true); atualizarTudo();
+}
+
+// ===================================================================
+// BACKUP
+// ===================================================================
+function descarregar(blob, nome) {
+  const url = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href = url; a.download = nome; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+function exportarBackupJSON() {
+  const hoje = hojeISO();
+  AppState.ultimoBackup = hoje; guardarEstado(false);
+  descarregar(new Blob([JSON.stringify(AppState, null, 2)], { type: "application/json" }), `Backup_Avaliacao_Geografia_${hoje}.json`);
+  $("backup-msg").innerText = "Backup descarregado."; atualizarSelectores();
+}
+function importarBackupJSON(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  if (!confirm("Restaurar este backup substitui TODOS os dados atuais. Continuar?")) { ev.target.value = ""; return; }
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const st = migrar(JSON.parse(e.target.result));
+      if (!st) throw new Error("ficheiro sem turmas");
+      AppState = st; garantirTurmaAtiva(); guardarEstado(true); atualizarTudo();
+      $("backup-msg").innerText = "Backup restaurado.";
+    } catch (err) { alert("Não foi possível ler o backup: " + err.message); }
+    ev.target.value = "";
+  };
+  r.readAsText(f);
+}
+function limparTudo() {
+  if (!confirm("Apagar TODOS os dados (turmas, alunos, notas, medidas)?")) return;
+  if (!confirm("Última confirmação: já tens um backup?")) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {} // os dados da versão original ficam intactos no navegador
+  AppState = estadoPadrao(); garantirTurmaAtiva(); guardarEstado(true); atualizarTudo();
+}
+
+// ===================================================================
+// EXPORTAÇÕES
+// ===================================================================
+function nomeFicheiro(t, ext) {
+  const turma = t.nome.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^A-Za-z0-9]+/g, "");
+  return `Geografia_${turma}_${AppState.vista}_${t.anoLetivo.replace("/", "-")}.${ext}`;
+}
+// Colunas de elementos para exportar (inclui o registo em aula, se contar)
+function colunasExport(t) {
+  const cols = instsVista(t).map(i => ({ id: i.id, label: i.label, dom: i.dom, cab: `${i.id} (${i.sem}.º S)`, val: a => eDisp(a.notas[i.id]) ? "D" : temNota(a.notas[i.id]) ? Number(a.notas[i.id]) : "" }));
+  if (haRA(t)) cols.push({ id: "RA", label: "Registo em aula", dom: "d3", cab: "RA (registo em aula)", val: a => { const v = valorRA(a); return v === null ? "" : Number(v.toFixed(2)); } });
+  return cols;
+}
+function exportarCSV() {
+  const t = obterTurmaAtiva(); if (!t) return;
+  const cols = colunasExport(t), dn = nomesDom(t);
+  const linhas = [["N.º", "Nome", ...cols.map(c => c.cab), `Média ${dn.raw1} %`, `Média ${dn.raw2} %`, `Média ${dn.raw3} %`, "Final %", "Nível"]];
+  alunosAtivos(t).forEach(a => {
+    const r = calcular(a, t);
+    const f = v => v === null ? "" : v.toFixed(1).replace(".", ",");
+    linhas.push([a.num, a.nome, ...cols.map(c => String(c.val(a)).replace(".", ",")), f(r.m1Pct), f(r.m2Pct), f(r.m3Pct), f(r.totalPct), r.nivelFinal ?? ""]);
+  });
+  const csv = linhas.map(l => l.map(c => `"${String(c).replace(/"/g, '""')}"`).join(";")).join("\n");
+  descarregar(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }), nomeFicheiro(t, "csv"));
+}
+function exportarExcel() {
+  const t = obterTurmaAtiva(); if (!t) return;
+  if (typeof XLSX === "undefined") return alert("A biblioteca de Excel não está disponível. Usa «Exportar CSV».");
+  const insts = colunasExport(t), dn = nomesDom(t), cfg = CONFIG_CICLOS[t.ciclo];
+  const borda = { top: { style: "thin", color: { rgb: "CBD5E1" } }, bottom: { style: "thin", color: { rgb: "CBD5E1" } }, left: { style: "thin", color: { rgb: "CBD5E1" } }, right: { style: "thin", color: { rgb: "CBD5E1" } } };
+  const est = (fill, cor = "0F172A", bold = false, al = "center") => ({ font: { bold, color: { rgb: cor }, sz: 10 }, fill: fill ? { fgColor: { rgb: fill } } : undefined, alignment: { horizontal: al, vertical: "center", wrapText: true }, border: borda });
+  const corDom = { d1: "DBEAFE", d2: "D1FAE5", d3: "FEF3C7" };
+  const cab = ["N.º", "Nome", ...insts.map(i => `${i.id}\n${i.label}`), `Média\n${dn.raw1}`, `Média\n${dn.raw2}`, `Média\n${dn.raw3}`, "Final %", t.ciclo === "secundario" ? "Nota" : "Nível", `Menção\n${dn.raw1}`, `Menção\n${dn.raw2}`, `Menção\n${dn.raw3}`];
+  const aoa = [[`${AppState.escola} — ${cfg.nome}`], [`Turma ${t.nome} · ${textoVista()} · ${t.anoLetivo}`], [], cab];
+  alunosAtivos(t).forEach(a => {
+    const r = calcular(a, t);
+    const n = v => v === null ? "" : Number(v.toFixed(1));
+    aoa.push([a.num, a.nome, ...insts.map(c => c.val(a)), n(r.m1Pct), n(r.m2Pct), n(r.m3Pct), n(r.totalPct), r.nivelFinal ?? "",
+      mencao(t, "d1", r.m1Pct).nivel, mencao(t, "d2", r.m2Pct).nivel, mencao(t, "d3", r.m3Pct).nivel]);
+  });
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  const nCols = cab.length;
+  ws["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: nCols - 1 } }, { s: { r: 1, c: 0 }, e: { r: 1, c: nCols - 1 } }];
+  ws["!cols"] = cab.map((h, c) => ({ wch: c === 1 ? 34 : c === 0 ? 5 : 11 }));
+  ws["!rows"] = [{ hpt: 20 }, { hpt: 16 }, {}, { hpt: 42 }];
+  ws["A1"].s = { font: { bold: true, sz: 13, color: { rgb: "143F39" } } };
+  ws["A2"].s = { font: { sz: 11, color: { rgb: "475569" } } };
+  for (let c = 0; c < nCols; c++) {
+    const ref = XLSX.utils.encode_cell({ r: 3, c });
+    let fill = "1F5C54", cor = "FFFFFF";
+    if (c >= 2 && c < 2 + insts.length) { fill = corDom[insts[c - 2].dom]; cor = "0F172A"; }
+    ws[ref].s = est(fill, cor, true);
+    for (let r = 4; r < aoa.length; r++) {
+      const rr = XLSX.utils.encode_cell({ r, c });
+      if (!ws[rr]) ws[rr] = { t: "s", v: "" };
+      const nivel = c === 2 + insts.length + 4 && aoa[r][c] !== "" ? aoa[r][c] : null;
+      let f = r % 2 ? "FFFFFF" : "F8FAFC", fc = "0F172A";
+      if (nivel !== null) { const pos = positivo(t, nivel); f = pos ? "DCFCE7" : "FEE2E2"; fc = pos ? "15803D" : "B91C1C"; }
+      ws[rr].s = est(f, fc, c === 1 || nivel !== null, c === 1 ? "left" : "center");
+    }
+  }
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Avaliação");
+  const dados = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+  descarregar(new Blob([dados], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }), nomeFicheiro(t, "xlsx"));
+}
+
+function guardarRegistoConta() { AppState.registoConta = $("cfg-registo-conta").checked; guardarEstado(true); }
+function renderizarRegrasCalculo() {
+  $("cfg-vazio-zero").checked = !!AppState.dominioVazioZero;
+  ["d1", "d2", "d3"].forEach(d => {
+    $("cfg-regra-" + d).innerHTML = Object.entries(REGRAS_ANO).map(([k, txt]) => `<option value="${k}" ${AppState.regraAno[d] === k ? "selected" : ""}>${txt}</option>`).join("");
+  });
+}
+function guardarRegrasCalculo() {
+  AppState.dominioVazioZero = $("cfg-vazio-zero").checked;
+  ["d1", "d2", "d3"].forEach(d => AppState.regraAno[d] = $("cfg-regra-" + d).value);
+  guardarEstado(true);
+}
+
+// ===================================================================
+// LIGAÇÃO ÀS FOLHAS DA DRIVE
+// ===================================================================
+let sincronizando = false;
+function atualizarEstadoDrive() {
+  const d = AppState.drive || {};
+  const configurada = !!(d.url && d.chave);
+  $("caixa-drive").style.display = configurada ? "block" : "none";
+  $("txt-estado-drive").innerText = sincronizando ? "A atualizar…" : (d.estado || (d.ultima ? "Atualizada: " + d.ultima : "Ainda não atualizada"));
+}
+function renderizarLigacaoDrive() {
+  const d = AppState.drive;
+  $("drive-url").value = d.url || ""; $("drive-chave").value = d.chave || ""; $("drive-auto").checked = d.auto !== false;
+}
+function guardarLigacaoDrive() {
+  const url = $("drive-url").value.trim(), chave = $("drive-chave").value.trim();
+  if (url && !/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(url)) return alert("O endereço deve ser do tipo https://script.google.com/macros/s/…/exec");
+  AppState.drive.url = url; AppState.drive.chave = chave; AppState.drive.auto = $("drive-auto").checked;
+  guardarEstado(true); atualizarEstadoDrive();
+}
+async function sincronizarDrive(silencioso) {
+  const d = AppState.drive || {};
+  if (!d.url || !d.chave) { if (!silencioso) { alert("Configura primeiro a ligação em «Cópia de Segurança → Ligação às folhas da Drive»."); navegar("backup"); } return; }
+  if (sincronizando) return;
+  if (anoArquivado()) { if (!silencioso) alert("O ano letivo ativo está arquivado (só leitura). Escolhe o ano em curso."); return; }
+  sincronizando = true; atualizarEstadoDrive();
+  let dados;
+  try {
+    const ctrl = new AbortController();
+    const to = setTimeout(() => ctrl.abort(), 60000);
+    const r = await fetch(d.url + "?k=" + encodeURIComponent(d.chave), { signal: ctrl.signal, credentials: "omit", cache: "no-store" });
+    clearTimeout(to);
+    dados = await r.json();
+    if (dados.erro) throw new Error(dados.erro);
+    if (!Array.isArray(dados.turmas)) throw new Error("resposta inesperada");
+  } catch (e) {
+    sincronizando = false;
+    AppState.drive.estado = "Sem ligação (" + (e.name === "AbortError" ? "tempo esgotado" : e.message) + ")";
+    guardarEstado(false); atualizarEstadoDrive();
+    if (!silencioso) alert("Não foi possível atualizar da Drive: " + (e.name === "AbortError" ? "a Drive demorou demasiado a responder." : e.message) + "\nOs dados da app ficam como estavam.");
+    return;
+  }
+  const relatorio = aplicarDadosDrive(dados);
+  const agora = new Date();
+  AppState.drive.ultima = agora.toLocaleDateString("pt-PT") + " " + agora.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" });
+  AppState.drive.estado = "";
+  sincronizando = false;
+  guardarEstado(false); garantirTurmaAtiva(); atualizarTudo();
+  if ($("drive-relatorio")) $("drive-relatorio").innerHTML = `<strong>Atualizado em ${AppState.drive.ultima}:</strong><br>` + relatorio.map(esc).join("<br>");
+  const houveAlteracoes = relatorio.some(l => !/sem alterações/.test(l));
+  toast(houveAlteracoes ? "Drive: dados atualizados." : "Drive: sem alterações.");
+  if (!silencioso) alert("Atualização da Drive concluída:\n\n" + relatorio.join("\n"));
+}
+
+// Junta os dados da Drive à app. A Drive manda nos elementos que vêm de lá (☁);
+// tudo o que só existe na app fica intacto.
+function aplicarDadosDrive(dados) {
+  const linhas = [];
+  dados.turmas.forEach(td => {
+    let t = turmasDoAno().find(x => norm(x.nome) === norm(td.nome));
+    let criada = false;
+    if (!t) { t = novaTurma(td.nome, /^(1[0-2])/.test(td.nome) ? "secundario" : "basico", AppState.anoAtivo); AppState.turmas.push(t); criada = true; }
+    // alunos (a folha manda no número e no nome)
+    let novos = 0, renomeados = 0, sairam = 0, voltaram = 0;
+    const nums = new Set(td.alunos.map(a => Number(a[0])));
+    td.alunos.forEach(([num, nome]) => {
+      num = Number(num);
+      const a = t.alunos.find(x => x.num === num);
+      if (!a) { t.alunos.push(novoAluno(num, nome)); novos++; return; }
+      if (a.nome !== nome) { a.nome = nome; renomeados++; }
+      if (a.estado === "saiu") { a.estado = "ativo"; voltaram++; }
+    });
+    t.alunos.forEach(a => { if (!nums.has(a.num) && a.estado !== "saiu") { a.estado = "saiu"; sairam++; } });
+    ordenarAlunos(t);
+    // elementos vindos da Drive
+    const vindos = [];
+    (td.elementos || []).forEach(e => {
+      const m = String(e.h).match(/^(Teste|Forms)\s*(\d+)/i);
+      if (m) vindos.push({ id: (m[1][0].toUpperCase() === "T" ? "T" : "F") + m[2], label: e.h, dom: "d1", sem: e.sem === 2 ? 2 : 1, notas: e.notas || {} });
+    });
+    (td.tecnicas || []).forEach((e, i) => vindos.push({ id: "TEC" + (i + 1), label: e.h, dom: "d2", sem: e.sem === 2 ? 2 : 1, notas: e.notas || {} }));
+    const c1 = {}, c2 = {};
+    Object.entries(td.comp || {}).forEach(([n, v]) => { if (v && v[1] !== null && v[1] !== undefined) c1[n] = v[1] / 15 * 100; if (v && v[3] !== null && v[3] !== undefined) c2[n] = v[3] / 15 * 100; });
+    if (Object.keys(c1).length) vindos.push({ id: "CMP1", label: "Compromisso 1.º S (ocorrências)", dom: "d3", sem: 1, notas: c1 });
+    if (Object.keys(c2).length) vindos.push({ id: "CMP2", label: "Compromisso 2.º S (ocorrências)", dom: "d3", sem: 2, notas: c2 });
+    const idsVindos = new Set(vindos.map(e => e.id));
+    // retirar os elementos antigos geridos pela Drive (guardando as notas para contar diferenças)
+    const geridos = t.instrumentos.filter(i => i.drive || idsVindos.has(i.id) || i.id === "CMP").map(i => i.id);
+    const antes = {};
+    t.alunos.forEach(a => geridos.forEach(id => { if (a.notas[id] !== undefined) antes[id + "|" + a.num] = a.notas[id]; delete a.notas[id]; }));
+    t.instrumentos = t.instrumentos.filter(i => !geridos.includes(i.id));
+    // pôr os elementos da Drive (primeiro, pela ordem da folha)
+    let alteradas = 0;
+    const novosInst = vindos.map(e => ({ id: e.id, label: e.label, dom: e.dom, sem: e.sem, drive: true }));
+    t.instrumentos = [...novosInst, ...t.instrumentos];
+    vindos.forEach(e => Object.entries(e.notas).forEach(([n, v]) => {
+      const a = t.alunos.find(x => x.num === Number(n));
+      if (!a || typeof v !== "number" || isNaN(v)) return;
+      const val = Number(v.toFixed(2));
+      a.notas[e.id] = val;
+      if (antes[e.id + "|" + a.num] !== val) alteradas++;
+      delete antes[e.id + "|" + a.num];
+    }));
+    const apagadas = Object.keys(antes).filter(k => !/^CMP\|/.test(k)).length;
+    const partes = [];
+    if (criada) partes.push("turma criada");
+    if (novos) partes.push(`${novos} aluno(s) novo(s)`);
+    if (renomeados) partes.push(`${renomeados} nome(s) corrigido(s)`);
+    if (sairam) partes.push(`${sairam} aluno(s) marcado(s) como «saiu»`);
+    if (voltaram) partes.push(`${voltaram} aluno(s) de volta`);
+    if (alteradas) partes.push(`${alteradas} nota(s) nova(s) ou alterada(s)`);
+    if (apagadas) partes.push(`${apagadas} nota(s) retirada(s) na folha`);
+    linhas.push(`${t.nome}: ${partes.length ? partes.join(", ") : "sem alterações"}`);
+  });
+  return linhas;
+}
+
+// Fechar modais com Esc
+
+// ===================================================================
+// REGISTO EM AULA
+// ===================================================================
+let tipoRegisto = "comp";
+function mudarTipoRegisto(k) { tipoRegisto = k; renderizarRegisto(); }
+function renderizarRegisto() {
+  const t = obterTurmaAtiva();
+  if (!$("rr-data").value) $("rr-data").value = hojeISO();
+  if (!$("rr-sem").dataset.init) { $("rr-sem").value = AppState.vista === "S2" ? "2" : "1"; $("rr-sem").dataset.init = "1"; }
+  ["comp", "mat", "tpc"].forEach(k => $("rr-tab-" + k).classList.toggle("on", k === tipoRegisto));
+  if (!t) { semTurma("rr-lista"); $("rr-historico").innerHTML = ""; return; }
+  const data = $("rr-data").value, sem = Number($("rr-sem").value), arq = anoArquivado() ? "disabled" : "";
+  $("registo-titulo").innerText = `Registo em Aula — ${t.nome}`;
+  $("rr-ajuda").innerHTML = {
+    comp: `<strong>Compromisso</strong> nesta aula, de 1 (muito fraco) a 5 (excelente). ${AppState.registoConta ? "A média destes registos entra no domínio 3 como elemento «RA»." : "Neste momento os registos <strong>não</strong> contam para a nota (ver Critérios &amp; Ponderações)."}`,
+    mat: "Toca no aluno que <strong>não trouxe o material</strong> nesta aula.",
+    tpc: "Toca no aluno que <strong>não fez o trabalho de casa</strong> desta aula."
+  }[tipoRegisto];
+  const vistaSem = sem === 1 ? "S1" : "S2";
+  $("rr-lista").innerHTML = t.alunos.map((a, i) => ({ a, i })).filter(x => x.a.estado !== "saiu").map(({ a, i }) => {
+    const hoje = (a.reg || []).find(r => r.d === data && r.k === tipoRegisto);
+    const rs = resumoRegistos(a, vistaSem);
+    const btns = tipoRegisto === "comp"
+      ? [1, 2, 3, 4, 5].map(v => `<button class="rr-btn n${v} ${hoje && hoje.v === v ? "on" : ""}" ${arq} onclick="registar(${i}, 'comp', ${v})">${v}</button>`).join("")
+      : `<button class="rr-btn toggle ${hoje ? "on" : ""}" ${arq} onclick="registar(${i}, '${tipoRegisto}')">${hoje ? "✔ registado" : (tipoRegisto === "mat" ? "Sem material" : "Não fez TPC")}</button>`;
+    return `<div class="rr-linha"><div class="num">${a.num}</div><div class="nome">${esc(a.nome)} ${a.med.aval.length ? "⏱" : ""}</div>
+      <div class="resumo">${sem}.º S: ${rs.nComp ? `comp. ${virgula(rs.mediaComp)} (${rs.nComp})` : "comp. —"} · mat. ${rs.mat} · TPC ${rs.tpc}</div>
+      <div class="rr-btns">${btns}</div></div>`;
+  }).join("") || '<div class="vazio">Sem alunos nesta turma.</div>';
+  // histórico por dia
+  const dias = {};
+  t.alunos.forEach(a => (a.reg || []).forEach(r => { const d = dias[r.d] = dias[r.d] || { s: r.s, comp: 0, mat: 0, tpc: 0 }; d[r.k]++; }));
+  const chaves = Object.keys(dias).sort().reverse();
+  $("rr-historico").innerHTML = chaves.length ? `<table style="max-width:640px;"><thead><tr><th>Data</th><th>Semestre</th><th>Compromisso</th><th>Material</th><th>TPC</th><th></th></tr></thead><tbody>
+    ${chaves.map(d => `<tr><td><a href="#" onclick="$('rr-data').value='${d}'; renderizarRegisto(); return false;">${d.split("-").reverse().join("/")}</a></td><td>${dias[d].s}.º</td><td>${dias[d].comp}</td><td>${dias[d].mat}</td><td>${dias[d].tpc}</td>
+      <td><button class="btn btn-sm btn-danger" ${arq} onclick="apagarRegistosDia('${d}')">Apagar dia</button></td></tr>`).join("")}</tbody></table>` : '<p class="muted">Ainda não há registos.</p>';
+}
+function registar(i, k, v) {
+  if (bloqueado()) return;
+  const t = obterTurmaAtiva(), a = t.alunos[i];
+  const data = $("rr-data").value, sem = Number($("rr-sem").value);
+  if (!data) return alert("Escolhe a data da aula.");
+  a.reg = a.reg || [];
+  const idx = a.reg.findIndex(r => r.d === data && r.k === k);
+  const novo = k === "comp" ? { d: data, s: sem, k, v } : { d: data, s: sem, k };
+  if (idx >= 0) { const mesmo = k !== "comp" || a.reg[idx].v === v; a.reg.splice(idx, 1); if (!mesmo) a.reg.push(novo); }
+  else a.reg.push(novo);
+  guardarEstado(false); renderizarRegisto();
+}
+function apagarRegistosDia(d) {
+  if (bloqueado()) return;
+  const t = obterTurmaAtiva();
+  if (!confirm(`Apagar todos os registos de ${d.split("-").reverse().join("/")} na turma ${t.nome}?`)) return;
+  t.alunos.forEach(a => a.reg = (a.reg || []).filter(r => r.d !== d));
+  guardarEstado(true); renderizarRegisto();
+}
+
+// ===================================================================
+// PIN (bloqueio simples — não cifra os dados)
+// ===================================================================
+function cyrb53(str, seed = 0) {
+  let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+  for (let i = 0, ch; i < str.length; i++) { ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (h2 >>> 0).toString(16).padStart(8, "0") + (h1 >>> 0).toString(16).padStart(8, "0");
+}
+function hashPIN(txt, salt) { let h = txt; for (let i = 0; i < 2000; i++) h = cyrb53(h + salt, i); return h; }
+function pinCorreto(pin) { return AppState.pin && hashPIN(String(pin), AppState.pin.salt) === AppState.pin.h; }
+function renderizarBackup() {
+  renderizarLigacaoDrive();
+  $("pin-estado").innerHTML = AppState.pin ? '<span class="ok">🔒 PIN ativo.</span> A app pede o PIN sempre que é aberta.' : '<span class="muted">Sem PIN: a app abre diretamente.</span>';
+  $("btn-remover-pin").style.display = AppState.pin ? "inline-flex" : "none";
+}
+function definirPIN() {
+  const p1 = $("pin-novo").value.trim(), p2 = $("pin-novo2").value.trim();
+  if (!/^\d{4,8}$/.test(p1)) return alert("O PIN tem de ter entre 4 e 8 algarismos.");
+  if (p1 !== p2) return alert("Os dois PIN não coincidem.");
+  if (AppState.pin) { const atual = prompt("Escreve o PIN atual:"); if (atual === null) return; if (!pinCorreto(atual)) return alert("PIN atual errado."); }
+  const letras = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const rec = Array.from({ length: 8 }, () => letras[Math.floor(Math.random() * letras.length)]).join("");
+  const salt = Math.random().toString(36).slice(2, 10);
+  AppState.pin = { h: hashPIN(p1, salt), r: hashPIN(rec, salt), salt };
+  guardarEstado(true);
+  $("pin-novo").value = ""; $("pin-novo2").value = "";
+  alert(`PIN guardado.\n\nCÓDIGO DE RECUPERAÇÃO: ${rec.slice(0, 4)}-${rec.slice(4)}\n\nEscreve-o num papel e guarda-o. Serve para entrar se te esqueceres do PIN.`);
+  renderizarBackup(); atualizarSelectores();
+}
+function removerPIN() {
+  const atual = prompt("Escreve o PIN atual para o remover:"); if (atual === null) return;
+  if (!pinCorreto(atual)) return alert("PIN errado.");
+  AppState.pin = null; guardarEstado(true); renderizarBackup(); atualizarSelectores();
+}
+function bloquearApp() { if (!AppState.pin) return; $("pin-entrada").value = ""; $("pin-erro").innerText = ""; $("ecra-bloqueio").classList.add("ativo"); setTimeout(() => $("pin-entrada").focus(), 50); }
+function desbloquearApp() {
+  if (pinCorreto($("pin-entrada").value.trim())) { $("ecra-bloqueio").classList.remove("ativo"); $("pin-entrada").value = ""; $("pin-erro").innerText = ""; }
+  else { $("pin-erro").innerText = "PIN errado."; $("pin-entrada").select(); }
+}
+function recuperarPIN() {
+  const c = prompt("Escreve o código de recuperação (8 caracteres):"); if (c === null) return;
+  const limpo = c.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (AppState.pin && hashPIN(limpo, AppState.pin.salt) === AppState.pin.r) {
+    AppState.pin = null; guardarEstado(false);
+    $("ecra-bloqueio").classList.remove("ativo"); atualizarSelectores();
+    alert("PIN removido. Define um novo em «Cópia de Segurança».");
+  } else $("pin-erro").innerText = "Código de recuperação errado.";
+}
+
+// Fechar modais com Esc
+document.addEventListener("keydown", e => { if (e.key === "Escape") document.querySelectorAll(".modal.aberto").forEach(m => m.classList.remove("aberto")); });
+inicializar();
+</script>
+</body>
+</html>
