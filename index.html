@@ -101,6 +101,9 @@
   .reporte-card h4 { font-size: 14px; margin-bottom: 8px; display: flex; justify-content: space-between; gap: 10px; }
   .reporte-item { display: grid; grid-template-columns: 260px 1fr; gap: 12px; margin-bottom: 6px; font-size: 12px; }
   .reporte-item .d-title { font-weight: 700; color: #334155; }
+  table.tbl th { background: var(--primary); color: #fff; padding: 6px 8px; font-weight: 700; border: 1px solid var(--border-light); }
+  table.tbl td { padding: 4px 8px; border: 1px solid var(--border-light); }
+  table.tbl tbody tr:nth-child(even) td { background: #f8fafc; }
   .reporte-item .d-text { background: #f8fafc; padding: 6px 10px; border-radius: 4px; border-left: 3px solid var(--primary); color: #475569; }
   .criterio-config-card { background: #F8FAF7; border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 12px; display: grid; grid-template-columns: 120px 1fr 140px; gap: 14px; align-items: center; }
   .soma-badge { display: inline-flex; padding: 6px 14px; border-radius: 99px; font-weight: 700; font-size: 13px; }
@@ -316,7 +319,14 @@
   <section id="view-reporte" style="display:none;">
     <div class="view-header">
       <div><h2>Reporte Avaliativo Intercalar</h2><p id="reporte-desc">Descritores de desempenho por domínio.</p></div>
-      <div class="btn-bar"><button class="btn btn-primary" onclick="window.print()">Imprimir / Guardar PDF</button></div>
+      <div class="btn-bar">
+        <select id="sel-intercalar" class="inp" onchange="semIntercalar = Number(this.value); renderizarReporte();" title="Que avaliação intercalar">
+          <option value="1">1.ª intercalar (1.º semestre)</option>
+          <option value="2">2.ª intercalar (2.º semestre)</option>
+        </select>
+        <button class="btn" onclick="copiarTabelaInovar()">📋 Copiar tabela</button>
+        <button class="btn btn-primary" onclick="window.print()">Imprimir / Guardar PDF</button>
+      </div>
     </div>
     <div id="lista-reportes"></div>
   </section>
@@ -1561,17 +1571,77 @@ function renderizarFicha() {
 // ===================================================================
 // REPORTE INTERCALAR
 // ===================================================================
+// Regra das intercalares (como nas folhas de avaliação):
+//  Conhecimento — só conta o que já foi feito: média dos Forms (e outros elementos que não sejam testes) do semestre
+//                 com o 1.º teste do semestre (Teste 1 no 1.º S, Teste 3 no 2.º S); o 2.º teste do semestre não entra.
+//                 Enquanto ninguém da turma tiver nota nesse teste, conta só a média dos Forms.
+//                 Se o teste já foi feito e o aluno não tem nota, conta 0 (e a app avisa).
+//  Métodos e Técnicas — «Não avaliado» enquanto a turma não tiver trabalhos com nota nesse semestre.
+//  Compromisso — o mesmo do semestre (ocorrências e registos em aula).
+let semIntercalar = null;
+function calcularIntercalar(a, t, sem) {
+  const med = arr => arr.length ? arr.reduce((x, y) => x + y, 0) / arr.length : null;
+  const insts = t.instrumentos.filter(i => i.sem === sem);
+  const ehTeste = i => /^T\d+$/.test(i.id) || /^teste/i.test(i.label || "");
+  const testes = insts.filter(i => i.dom === "d1" && ehTeste(i)).sort((x, y) => (Number(String(x.id).replace(/\D/g, "")) || 0) - (Number(String(y.id).replace(/\D/g, "")) || 0));
+  const teste = testes[0] || null;
+  const outros = insts.filter(i => i.dom === "d1" && !ehTeste(i));
+  const mForms = med(outros.map(i => a.notas[i.id]).filter(temNota).map(Number));
+  const testeFeito = !!teste && alunosAtivos(t).some(x => temNota(x.notas[teste.id]) && Number(x.notas[teste.id]) > 0);
+  let vTeste = null, semTeste = false;
+  if (testeFeito && !eDisp(a.notas[teste.id])) {
+    const v = a.notas[teste.id];
+    if (temNota(v) && Number(v) > 0) vTeste = Number(v); else { vTeste = 0; semTeste = true; }
+  }
+  const partes = [mForms, vTeste].filter(x => x !== null);
+  const d1 = med(partes);
+  const tec = insts.filter(i => i.dom === "d2");
+  const turmaTemTec = tec.some(i => alunosAtivos(t).some(x => temNota(x.notas[i.id])));
+  const d2 = turmaTemTec ? med(tec.map(i => a.notas[i.id]).filter(temNota).map(Number)) : null;
+  const d3 = calcular(a, t, sem === 2 ? "S2" : "S1").m3Pct;
+  return { d1, d2, d3, d2NaoAvaliado: !turmaTemTec, mForms, vTeste, semTeste, testeFeito, teste: teste ? (teste.label || teste.id) : null, nForms: outros.length };
+}
+function textoMencaoIntercalar(t, d, r) {
+  if (d === "d2" && r.d2NaoAvaliado) return { nivel: "Não avaliado", txt: "Este domínio ainda não foi avaliado neste semestre." };
+  return mencao(t, d, r[d]);
+}
 function renderizarReporte() {
   const t = obterTurmaAtiva(); const cont = $("lista-reportes");
   if (!t) { semTurma("lista-reportes"); return; }
-  $("reporte-desc").innerText = `${t.nome} · ${textoVista()} · descritores de desempenho por domínio.`;
-  const dn = nomesDom(t);
-  cont.innerHTML = alunosAtivos(t).map(a => {
-    const r = calcular(a, t);
-    return `<div class="reporte-card"><h4><span>${a.num}. ${esc(a.nome)}</span><span style="color:var(--primary);">${fmtNivel(t, r.nivelFinal)}</span></h4>
-      ${["d1", "d2", "d3"].map(d => { const m = mencao(t, d, r["m" + d.slice(1) + "Pct"]); return `<div class="reporte-item"><div class="d-title">${esc(dn[d])} (${fmtPct(t, r["m" + d.slice(1) + "Pct"])} · ${pontosDom(t, d, r["m" + d.slice(1) + "Pct"], r).txt} pontos)</div><div class="d-text"><strong>[${m.nivel}]</strong> ${esc(m.txt)}</div></div>`; }).join("")}
-    </div>`;
-  }).join("") || '<div class="vazio">Sem alunos.</div>';
+  if (semIntercalar === null) semIntercalar = AppState.vista === "S2" ? 2 : 1;
+  $("sel-intercalar").value = String(semIntercalar);
+  const sem = semIntercalar, dn = nomesDom(t), alunos = alunosAtivos(t);
+  const rs = alunos.map(a => ({ a, r: calcularIntercalar(a, t, sem) }));
+  const r0 = rs.length ? rs[0].r : null;
+  $("reporte-desc").innerText = `${t.nome} · ${sem}.ª avaliação intercalar (${sem}.º semestre) · menções para o Inovar e descritores por domínio.`;
+  const regra = !r0 ? "" : (r0.testeFeito
+      ? `Conhecimento = média dos Forms do ${sem}.º semestre com o ${esc(r0.teste)} (o outro teste do semestre não conta).`
+      : `Conhecimento = só a média dos Forms do ${sem}.º semestre${r0.teste ? `, porque o ${esc(r0.teste)} ainda não tem notas` : ""}.`)
+    + (r0.d2NaoAvaliado ? ` ${esc(dn.raw2)}: «Não avaliado».` : "");
+  const semT = rs.filter(x => x.r.semTeste).map(x => x.a.num + ". " + x.a.nome);
+  const celula = (d, r) => { const m = textoMencaoIntercalar(t, d, r); return `<td style="text-align:center;"><span class="mencao ${classeMencao(m.nivel)}" style="padding:2px 8px; border-radius:4px; display:inline-block;">${esc(m.nivel)}</span></td>`; };
+  const tabela = `<div class="panel" style="margin-bottom:16px;">
+    <h3>Tabela para o Inovar — ${sem}.ª intercalar</h3>
+    <p class="muted" style="font-size:12px; margin:4px 0 10px;">${regra}</p>
+    ${semT.length ? `<p style="font-size:12px; color:#b91c1c; margin:0 0 10px;">⚠️ Sem nota no ${esc(r0.teste)} (conta 0): ${semT.map(esc).join("; ")}.</p>` : ""}
+    <div style="overflow-x:auto;"><table class="tbl" style="width:100%; border-collapse:collapse; font-size:12.5px;">
+      <thead><tr><th style="text-align:center;">N.º</th><th style="text-align:left;">Nome</th><th>${esc(dn.raw1)}</th><th>${esc(dn.raw2)}</th><th>${esc(dn.raw3)}</th></tr></thead>
+      <tbody>${rs.map(({ a, r }) => `<tr><td style="text-align:center;">${a.num}</td><td>${esc(a.nome)}</td>${celula("d1", r)}${celula("d2", r)}${celula("d3", r)}</tr>`).join("")}</tbody>
+    </table></div></div>`;
+  const cartoes = rs.map(({ a, r }) => `<div class="reporte-card"><h4><span>${a.num}. ${esc(a.nome)}</span><span style="color:var(--primary);">${sem}.ª intercalar</span></h4>
+      ${["d1", "d2", "d3"].map(d => { const m = textoMencaoIntercalar(t, d, r); const pct = d === "d2" && r.d2NaoAvaliado ? "" : ` (${fmtPct(t, r[d])})`; return `<div class="reporte-item"><div class="d-title">${esc(dn[d])}${pct}</div><div class="d-text"><strong>[${esc(m.nivel)}]</strong> ${esc(m.txt)}</div></div>`; }).join("")}
+    </div>`).join("");
+  cont.innerHTML = rs.length ? tabela + cartoes : '<div class="vazio">Sem alunos.</div>';
+}
+function copiarTabelaInovar() {
+  const t = obterTurmaAtiva(); if (!t) return;
+  const sem = semIntercalar || 1, dn = nomesDom(t);
+  const linhas = [["N.º", "Nome", dn.raw1, dn.raw2, dn.raw3].join("\t")].concat(alunosAtivos(t).map(a => {
+    const r = calcularIntercalar(a, t, sem);
+    return [a.num, a.nome, textoMencaoIntercalar(t, "d1", r).nivel, textoMencaoIntercalar(t, "d2", r).nivel, textoMencaoIntercalar(t, "d3", r).nivel].join("\t");
+  }));
+  const txt = linhas.join("\n"), fim = () => toast("Tabela copiada.");
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(fim, () => alert(txt)); else alert(txt);
 }
 
 // ===================================================================
