@@ -278,6 +278,7 @@
       </div>
     </div>
     <div class="table-wrap"><table id="tbl-avaliar"><thead id="tbl-head"></thead><tbody id="tbl-body"></tbody></table></div>
+    <div id="ocorr-turma" style="margin-top:22px;"></div>
   </section>
 
   <!-- 2. SÍNTESE CT -->
@@ -1040,6 +1041,63 @@ const classeMencao = m => ({ "Muito Bom": "mencao-mb", "Bom": "mencao-bom", "Suf
 const paraPct = (v, esc) => (Number(v) / Number(esc)) * 100;
 const dePct = (pct, esc, dec = 1) => (pct === null || pct === undefined || isNaN(pct)) ? "" : Number(((pct / 100) * Number(esc)).toFixed(dec));
 function fmtPct(t, pct) { if (pct === null || isNaN(pct)) return "—"; return t.ciclo === "secundario" ? ((pct / 100) * 20).toFixed(1) + " val" : pct.toFixed(1) + "%"; }
+// Tipos de ocorrência (legenda das abas Observação da folha)
+const TIPOS_OCORR = {
+  A: "Atraso / falta de pontualidade",
+  B: "Incumprimento das regras de sala de aula",
+  C: "Não trabalhou na aula",
+  D: "Não trouxe material",
+  E: "Falta de TPC",
+  F: "Falta de assiduidade",
+  G: "Falta de cumprimento de prazo na entrega de trabalhos",
+  H: "Não trouxe o teste / questão de aula assinados",
+  I: "Falta de autonomia / participação",
+  J: "Não entregou trabalhos para avaliação",
+  K: "Persistência e motivação",
+  L: "Comportamento muito incorreto"
+};
+function contarOcorr(a, vista) {
+  vista = vista || AppState.vista;
+  const sems = vista === "S1" ? [1] : vista === "S2" ? [2] : [1, 2];
+  const c = {};
+  sems.forEach(s => ((a.obsOc || {})[s] || []).forEach(([, l]) => String(l).split("").forEach(x => { if (TIPOS_OCORR[x]) c[x] = (c[x] || 0) + 1; })));
+  return c;
+}
+function renderizarOcorrTurma(t) {
+  const cont = $("ocorr-turma"); if (!cont) return;
+  if (!t || !t.temObs) { cont.innerHTML = ""; return; }
+  const alunos = alunosAtivos(t);
+  const contagens = alunos.map(a => contarOcorr(a));
+  const usados = Object.keys(TIPOS_OCORR); // todos os tipos; só se escreve o número onde houver ocorrências
+  const algum = contagens.some(c => Object.keys(c).length);
+  const titulo = `Ocorrências — ${esc(t.nome)} · ${textoVista()}`;
+  if (!algum) { cont.innerHTML = `<div class="card" style="padding:14px;"><h3 style="margin:0 0 4px;">${titulo}</h3><p class="muted" style="margin:0;">Não há ocorrências registadas neste período. 👏</p></div>`; return; }
+  const th = usados.map(l => `<th style="text-align:center; vertical-align:bottom; white-space:normal; font-size:10px; line-height:1.2; padding:6px 3px; hyphens:auto; overflow-wrap:anywhere;" lang="pt"><div style="font-size:15px; font-weight:800;">${l}</div>${esc(TIPOS_OCORR[l])}</th>`).join("");
+  const linhas = alunos.map((a, i) => {
+    const c = contagens[i], tot = usados.reduce((s, l) => s + (c[l] || 0), 0);
+    return `<tr><td style="text-align:center; font-weight:700;">${a.num}</td><td style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><strong>${esc(a.nome)}</strong></td>
+      ${usados.map(l => `<td style="text-align:center; font-size:15px; font-weight:800; ${c[l] ? (c[l] >= 3 ? "background:#fee2e2; color:#b91c1c;" : c[l] === 2 ? "background:#ffedd5; color:#c2410c;" : "color:#0f172a;") : ""}">${c[l] || ""}</td>`).join("")}
+      <td style="text-align:center; font-weight:800; background:#f1f5f9;">${tot || ""}</td></tr>`;
+  }).join("");
+  cont.innerHTML = `<div class="card" id="ocorr-card" style="padding:14px; background:#fff;">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+      <h3 style="margin:0;">${titulo}</h3>
+      <button class="btn" onclick="const el=document.getElementById('ocorr-card'); if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) el.requestFullscreen(); else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();">⛶ Ecrã inteiro (mostrar aos alunos)</button>
+    </div>
+    <div class="table-wrap" style="overflow:auto;"><table class="tbl" style="border-collapse:collapse; width:100%; table-layout:fixed;"><colgroup><col style="width:38px"><col style="width:190px">${usados.map(() => "<col>").join("")}<col style="width:52px"></colgroup>
+      <thead><tr><th style="text-align:center;">N.º</th><th>Nome</th>${th}<th style="text-align:center; vertical-align:bottom;">Total</th></tr></thead>
+      <tbody>${linhas}</tbody></table></div>
+    <p class="muted" style="font-size:11px; margin:8px 0 0;">Vem das abas «Observação» da folha da turma (atualiza com «Atualizar da Drive»). As células vazias querem dizer que não houve essa ocorrência.</p>
+  </div>`;
+}
+// N.º de ocorrências (vindas da aba Compromisso da folha) na vista atual
+function ocorrVista(a, vista) {
+  vista = vista || AppState.vista; const o = a.ocorr; if (!o) return null;
+  const v1 = typeof o[1] === "number" ? o[1] : null, v2 = typeof o[2] === "number" ? o[2] : null;
+  if (vista === "S1") return v1; if (vista === "S2") return v2;
+  return (v1 === null && v2 === null) ? null : (v1 || 0) + (v2 || 0);
+}
+const haOcorr = t => t.alunos.some(a => a.ocorr);
 // Pontos que o domínio soma no total (ex.: Compromisso 100% → 15 em 15), como na folha de cálculo
 function pontosDom(t, d, pct, res) {
   const w = ponderacoes(t)[d]; const max = Math.round(w * 100);
@@ -1151,7 +1209,8 @@ function renderizarGrelha() {
   const doms = ["d1", "d2", "d3"];
   const mostrarSem = AppState.vista === "ANO";
   const ra = haRA(t);
-  const extra = d => (d === "d3" && ra ? 1 : 0);
+  const oc = haOcorr(t);
+  const extra = d => (d === "d3" ? (ra ? 1 : 0) + (oc ? 1 : 0) : 0);
   if (!t.alunos.length) { $("tbl-head").innerHTML = ""; $("tbl-body").innerHTML = `<tr><td class="vazio">Esta turma ainda não tem alunos. Importa a lista em «Turmas &amp; Alunos».</td></tr>`; atualizarCards(t); return; }
 
   $("tbl-head").innerHTML = `
@@ -1163,13 +1222,15 @@ function renderizarGrelha() {
     </tr>
     <tr>
       ${doms.map(d => porDom(d).map(i => `<th class="th-${d}" style="text-align:center;" title="${esc(i.label)}">${i.drive ? "☁ " : ""}${esc(i.id)}${mostrarSem ? `<span class="sem-tag">${i.sem}.º S</span>` : ""}</th>`).join("")
-        + (extra(d) ? `<th class="th-d3" style="text-align:center;" title="Registo em aula (média dos registos de Compromisso)">RA<span class="sem-tag">aula</span></th>` : "")
+        + (d === "d3" && oc ? `<th class="th-d3" style="text-align:center;" title="N.º de ocorrências registadas (aba Compromisso da folha). Cada ocorrência tira 1 ponto aos 15.">Ocorr.</th>` : "")
+        + (d === "d3" && ra ? `<th class="th-d3" style="text-align:center;" title="Registo em aula (média dos registos de Compromisso)">RA<span class="sem-tag">aula</span></th>` : "")
         + `<th class="th-${d}" style="text-align:center;">Média</th>`).join("")}
       <th class="th-fin">${t.ciclo === "secundario" ? "0-20" : "%"}</th><th class="th-fin">${t.ciclo === "secundario" ? "Nota" : "Nível"}</th>
       ${doms.map(d => `<th class="th-mencoes">${esc(dn["raw" + d.slice(1)].split(" ")[0])}</th>`).join("")}
     </tr>`;
 
   let rows = "";
+  renderizarOcorrTurma(t);
   t.alunos.forEach((a, r) => {
     const res = calcular(a, t);
     let c = 0;
@@ -1179,7 +1240,8 @@ function renderizarGrelha() {
       return `<td style="text-align:center;"><input type="text" class="score-input" value="${val}" data-r="${r}" data-c="${c++}" ${arq ? "disabled" : ""} ${i.drive ? 'readonly title="Vem da Drive — altera na folha de cálculo" style="background:#f1f5f9; color:#475569;"' : ""}
         onkeydown="navegarTeclado(event,${r},${c - 1})" onfocus="this.select()" onchange="atualizarNota(${r},'${esc(i.id)}',this)"></td>`;
     }).join("")
-      + (extra(d) ? (() => { const v = valorRA(a); const rs = resumoRegistos(a); return `<td style="text-align:center; color:#92400e;" title="${rs.nComp} registo(s) de Compromisso">${v === null ? "—" : dePct(v, escA, 1)}</td>`; })() : "")
+      + (d === "d3" && oc ? (() => { const n = ocorrVista(a); return `<td style="text-align:center; font-weight:700; ${n ? "color:#b91c1c;" : "color:#64748b;"}" title="Ocorrências registadas">${n === null ? "—" : n}</td>`; })() : "")
+      + (d === "d3" && ra ? (() => { const v = valorRA(a); const rs = resumoRegistos(a); return `<td style="text-align:center; color:#92400e;" title="${rs.nComp} registo(s) de Compromisso">${v === null ? "—" : dePct(v, escA, 1)}</td>`; })() : "")
       + `<td style="text-align:center; font-weight:700; background:#f8fafc;">${fmtPct(t, res["m" + d.slice(1) + "Pct"])}<div style="font-size:10.5px; font-weight:600; color:#0f766e;" title="Pontos que este domínio soma no total">${pontosDom(t, d, res["m" + d.slice(1) + "Pct"], res).txt}</div></td>`;
     const mm = doms.map(d => mencao(t, d, res["m" + d.slice(1) + "Pct"]));
     rows += `<tr class="${a.estado === "saiu" ? "saiu" : ""}">
@@ -1561,6 +1623,7 @@ function renderizarFicha() {
           return `<span style="background:#f1f5f9; border:1px solid #e2e8f0; padding:4px 8px; border-radius:4px;"><strong>${esc(i.label)}:</strong> ${txt}</span>`;
         }).join("") : '<span class="muted">Sem elementos neste período.</span>'}
         ${valorRA(a) !== null ? `<span style="background:#fffbeb; border:1px solid #fde68a; padding:4px 8px; border-radius:4px;"><strong>Registo em aula:</strong> ${t.ciclo === "secundario" ? ((valorRA(a) / 100) * 20).toFixed(1) + " val" : valorRA(a).toFixed(1) + "%"}</span>` : ""}</div>
+        ${ocorrVista(a) !== null ? `<p style="font-size:11.5px; color:#475569; margin-top:8px;">Ocorrências registadas: <strong>${ocorrVista(a)}</strong>${ocorrVista(a) ? ` (−${ocorrVista(a)} ponto${ocorrVista(a) > 1 ? "s" : ""} no Compromisso)` : ""}</p>` : ""}
         ${(() => { const rs = resumoRegistos(a); return (rs.mat || rs.tpc) ? `<p style="font-size:11.5px; color:#475569; margin-top:8px;">Faltas de material: <strong>${rs.mat}</strong> · Trabalhos de casa não realizados: <strong>${rs.tpc}</strong></p>` : ""; })()}</div>
       ${graficoEvolucao(a, t)}
       <div class="ficha-secao" style="margin-top:20px;"><h4>3. Reflexão / autoavaliação do aluno</h4><div style="height:60px; border:1px dashed #cbd5e1; border-radius:4px;"></div></div>
@@ -2226,6 +2289,8 @@ function aplicarDadosDrive(dados) {
     });
     (td.tecnicas || []).forEach((e, i) => vindos.push({ id: "TEC" + (i + 1), label: e.h, dom: "d2", sem: e.sem === 2 ? 2 : 1, notas: e.notas || {} }));
     const c1 = {}, c2 = {};
+    Object.entries(td.comp || {}).forEach(([n, v]) => { const al = t.alunos.find(x => x.num === Number(n)); if (al && v) al.ocorr = { 1: v[0], 2: v[2] }; });
+    if (td.obs) { t.temObs = true; t.alunos.forEach(a => { a.obsOc = { 1: [], 2: [] }; }); [1, 2].forEach(sem => ((td.obs[sem] || {}).alunos || []).forEach(([num, , oc]) => { const al = t.alunos.find(x => x.num === Number(num)); if (al) al.obsOc[sem] = oc; })); }
     Object.entries(td.comp || {}).forEach(([n, v]) => { if (v && v[1] !== null && v[1] !== undefined) c1[n] = v[1] / 15 * 100; if (v && v[3] !== null && v[3] !== undefined) c2[n] = v[3] / 15 * 100; });
     if (Object.keys(c1).length) vindos.push({ id: "CMP1", label: "Compromisso 1.º S (ocorrências)", dom: "d3", sem: 1, notas: c1 });
     if (Object.keys(c2).length) vindos.push({ id: "CMP2", label: "Compromisso 2.º S (ocorrências)", dom: "d3", sem: 2, notas: c2 });
