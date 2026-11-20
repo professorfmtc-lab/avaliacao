@@ -325,6 +325,7 @@
           <option value="1">1.ª intercalar (1.º semestre)</option>
           <option value="2">2.ª intercalar (2.º semestre)</option>
         </select>
+        <button class="btn btn-primary" onclick="copiarMencoesInovar()" title="Copia só as menções (I, S, B, NA) dos três domínios, aluno a aluno, sem números nem nomes">📋 Copiar só as menções</button>
         <button class="btn" onclick="copiarTabelaInovar()">📋 Copiar tabela</button>
         <button class="btn btn-primary" onclick="window.print()">Imprimir / Guardar PDF</button>
       </div>
@@ -1668,6 +1669,7 @@ function textoMencaoIntercalar(t, d, r) {
   if (d === "d2" && r.d2NaoAvaliado) return { nivel: "Não avaliado", txt: "Este domínio ainda não foi avaliado neste semestre." };
   return mencao(t, d, r[d]);
 }
+const siglaInovar = n => ({ "Insuficiente": "I", "Suficiente": "S", "Bom": "B", "Muito Bom": "MB", "Não avaliado": "NA" })[n] || n;
 function renderizarReporte() {
   const t = obterTurmaAtiva(); const cont = $("lista-reportes");
   if (!t) { semTurma("lista-reportes"); return; }
@@ -1682,13 +1684,13 @@ function renderizarReporte() {
       : `Conhecimento = só a média dos Forms do ${sem}.º semestre${r0.teste ? `, porque o ${esc(r0.teste)} ainda não tem notas` : ""}.`)
     + (r0.d2NaoAvaliado ? ` ${esc(dn.raw2)}: «Não avaliado».` : "");
   const semT = rs.filter(x => x.r.semTeste).map(x => x.a.num + ". " + x.a.nome);
-  const celula = (d, r) => { const m = textoMencaoIntercalar(t, d, r); return `<td style="text-align:center;"><span class="mencao ${classeMencao(m.nivel)}" style="padding:2px 8px; border-radius:4px; display:inline-block;">${esc(m.nivel)}</span></td>`; };
+  const celula = (d, r) => { const m = textoMencaoIntercalar(t, d, r); return `<td style="text-align:center;"><span class="mencao ${classeMencao(m.nivel)}" style="padding:2px 8px; border-radius:4px; display:inline-block;" title="${esc(m.nivel)}">${esc(siglaInovar(m.nivel))}</span></td>`; };
   const tabela = `<div class="panel" style="margin-bottom:16px;">
     <h3>Tabela para o Inovar — ${sem}.ª intercalar</h3>
-    <p class="muted" style="font-size:12px; margin:4px 0 10px;">${regra}</p>
+    <p class="muted" style="font-size:12px; margin:4px 0 10px;">${regra} Siglas: I = Insuficiente · S = Suficiente · B = Bom · NA = Não avaliado.</p>
     ${semT.length ? `<p style="font-size:12px; color:#b91c1c; margin:0 0 10px;">⚠️ Sem nota no ${esc(r0.teste)} (conta 0): ${semT.map(esc).join("; ")}.</p>` : ""}
     <div style="overflow-x:auto;"><table class="tbl" style="width:100%; border-collapse:collapse; font-size:12.5px;">
-      <thead><tr><th style="text-align:center;">N.º</th><th style="text-align:left;">Nome</th><th>${esc(dn.raw1)}</th><th>${esc(dn.raw2)}</th><th>${esc(dn.raw3)}</th></tr></thead>
+      <thead><tr><th style="text-align:center;">N.º</th><th style="text-align:left;">Nome</th>${["d1", "d2", "d3"].map((d, k) => `<th>${esc(dn["raw" + (k + 1)])} <button class="btn" style="padding:1px 6px; font-size:11px;" onclick="copiarMencoesInovar(['${d}'])" title="Copiar só esta coluna">📋</button></th>`).join("")}</tr></thead>
       <tbody>${rs.map(({ a, r }) => `<tr><td style="text-align:center;">${a.num}</td><td>${esc(a.nome)}</td>${celula("d1", r)}${celula("d2", r)}${celula("d3", r)}</tr>`).join("")}</tbody>
     </table></div></div>`;
   const cartoes = rs.map(({ a, r }) => `<div class="reporte-card"><h4><span>${a.num}. ${esc(a.nome)}</span><span style="color:var(--primary);">${sem}.ª intercalar</span></h4>
@@ -1696,12 +1698,24 @@ function renderizarReporte() {
     </div>`).join("");
   cont.innerHTML = rs.length ? tabela + cartoes : '<div class="vazio">Sem alunos.</div>';
 }
+// Copia só as menções (siglas), sem cabeçalho, números nem nomes — uma linha por aluno, pela ordem do n.º.
+// doms: ["d1","d2","d3"] (os três domínios) ou só um, p. ex. ["d1"].
+function copiarMencoesInovar(doms) {
+  const t = obterTurmaAtiva(); if (!t) return;
+  const sem = semIntercalar || 1, ds = doms || ["d1", "d2", "d3"];
+  const txt = alunosAtivos(t).map(a => {
+    const r = calcularIntercalar(a, t, sem);
+    return ds.map(d => siglaInovar(textoMencaoIntercalar(t, d, r).nivel)).join("\t");
+  }).join("\n");
+  const fim = () => toast(ds.length === 1 ? "Menções desta coluna copiadas." : "Menções copiadas (sem nomes).");
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(fim, () => alert(txt)); else alert(txt);
+}
 function copiarTabelaInovar() {
   const t = obterTurmaAtiva(); if (!t) return;
   const sem = semIntercalar || 1, dn = nomesDom(t);
   const linhas = [["N.º", "Nome", dn.raw1, dn.raw2, dn.raw3].join("\t")].concat(alunosAtivos(t).map(a => {
     const r = calcularIntercalar(a, t, sem);
-    return [a.num, a.nome, textoMencaoIntercalar(t, "d1", r).nivel, textoMencaoIntercalar(t, "d2", r).nivel, textoMencaoIntercalar(t, "d3", r).nivel].join("\t");
+    return [a.num, a.nome, siglaInovar(textoMencaoIntercalar(t, "d1", r).nivel), siglaInovar(textoMencaoIntercalar(t, "d2", r).nivel), siglaInovar(textoMencaoIntercalar(t, "d3", r).nivel)].join("\t");
   }));
   const txt = linhas.join("\n"), fim = () => toast("Tabela copiada.");
   if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(fim, () => alert(txt)); else alert(txt);
